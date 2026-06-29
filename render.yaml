@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: skyjo-server
+    env: node
+    rootDir: server
+    buildCommand: npm install && npx prisma migrate deploy
+    startCommand: npx tsx src/index.ts
+    envVars:
+      - key: DATABASE_URL
+        value: file:./prod.db
+      - key: CLIENT_ORIGIN
+        value: https://rimchakrouna.github.io
+      - key: NODE_VERSION
+        value: "20"

@@ -1,6 +1,0 @@
-{
-  "installCommand": "npm ci",
-  "buildCommand": "npm run build --workspace @skyjo/client",
-  "outputDirectory": "client/dist",
-  "framework": null
-}

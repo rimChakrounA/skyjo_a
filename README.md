@@ -75,43 +75,39 @@ Voir [docs/architecture.md](./docs/architecture.md) pour le détail.
 
 ## Déploiement en ligne
 
-Le backend se déploie sur **Railway**, le frontend sur **Vercel**.
+Le backend se déploie sur **Render**, le frontend sur **GitHub Pages** (via GitHub Actions).
 
-### 1 — Backend sur Railway
+### 1 — Backend sur Render
 
-1. Crée un compte sur [railway.app](https://railway.app) et installe la CLI :
-   ```bash
-   npm install -g @railway/cli
-   railway login
-   ```
-2. Depuis la racine du projet :
-   ```bash
-   railway init        # crée un nouveau projet
-   railway up          # déploie
-   ```
-3. Dans le dashboard Railway → **Variables**, ajoute :
+Le fichier `render.yaml` à la racine configure le service automatiquement.
+
+1. Sur [render.com](https://render.com) → **New Web Service** → connecte le dépôt GitHub.
+2. Dans **Environment Variables**, vérifie/ajoute :
 
    | Variable | Valeur |
    | --- | --- |
    | `DATABASE_URL` | `file:./prod.db` |
-   | `CLIENT_ORIGIN` | `https://ton-app.vercel.app` *(à remplir après l'étape Vercel)* |
+   | `CLIENT_ORIGIN` | `https://rimchakrouna.github.io` |
 
-4. Note l'URL publique générée (ex : `https://skyjo-online.up.railway.app`).
+3. Note l'URL publique générée (ex : `https://skyjo-server.onrender.com`).
 
-### 2 — Frontend sur Vercel
+### 2 — Frontend sur GitHub Pages
 
-1. Crée un compte sur [vercel.com](https://vercel.com) et importe le dépôt GitHub.
-2. Vercel détecte automatiquement `vercel.json`. Ajoute en **Environment Variables** :
+Le workflow `.github/workflows/deploy.yml` build et publie automatiquement à chaque push sur `main`.
 
-   | Variable | Valeur |
+**Avant le premier push :**
+
+1. GitHub → dépôt → **Settings → Secrets and variables → Actions** → ajoute :
+
+   | Secret | Valeur |
    | --- | --- |
-   | `VITE_SERVER_URL` | `https://skyjo-online.up.railway.app` *(URL Railway de l'étape 1)* |
+   | `VITE_SERVER_URL` | `https://skyjo-server.onrender.com` *(URL Render de l'étape 1)* |
 
-3. Clique **Deploy** — le client sera accessible sur `https://ton-app.vercel.app`.
+2. GitHub → **Settings → Pages → Source** → sélectionne la branche `gh-pages`.
 
-4. Retourne dans Railway et mets à jour `CLIENT_ORIGIN` avec l'URL Vercel.
+Le client sera accessible sur **https://rimchakrouna.github.io/skyjo_a/**.
 
-> **Note** : La base SQLite est stockée dans le conteneur Railway. Les parties terminées
+> **Note** : La base SQLite est stockée dans le conteneur Render. Les parties terminées
 > sont effacées à chaque redéploiement. Le gameplay (en mémoire) n'est pas affecté.
 
 ---
