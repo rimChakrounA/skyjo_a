@@ -1,44 +1,80 @@
 # Skyjo Online
 
-Version multijoueur en ligne du jeu de cartes Skyjo. Le projet est organisé en monorepo (npm workspaces) :
+Version multijoueur en ligne du jeu de cartes Skyjo, jouable dans le navigateur.
 
-```
-client/   Interface React (affichage uniquement)
-server/   API Express + Socket.IO + moteur de jeu (source de vérité)
-shared/   Types, interfaces et constantes partagés (aucune logique métier)
-docs/     Documentation du projet
-```
+**Stack** : React · TypeScript · Vite · Node.js · Express · Socket.IO · Prisma · SQLite
 
-## Prérequis
+---
 
-- Node.js >= 20
+## Jouer en local
+
+### Prérequis
+
+- [Node.js](https://nodejs.org) >= 20
 - npm >= 10
 
-## Installation
+### Installation
 
 ```bash
+git clone https://github.com/VOTRE_COMPTE/skyjo-online.git
+cd skyjo-online
 npm install
 ```
 
+### Base de données
+
+```bash
+cd server
+npx prisma migrate dev
+cd ..
+```
+
+### Lancement
+
+```bash
+npm run dev
+```
+
+- Client : http://localhost:5173
+- Serveur : http://localhost:3001
+
+### Tester avec plusieurs joueurs
+
+Ouvre **plusieurs onglets** (ou plusieurs navigateurs) sur http://localhost:5173 :
+
+1. **Joueur 1** — saisir un pseudo → **Créer une salle**
+2. **Joueur 2** — saisir un pseudo → entrer le code → **Rejoindre**
+3. Le joueur 1 (hôte) clique **Démarrer la partie**
+
+---
+
 ## Scripts
 
-| Commande            | Description                                          |
-| ------------------- | ---------------------------------------------------- |
-| `npm run dev`       | Lance le serveur et le client en parallèle           |
-| `npm run dev:server`| Lance uniquement le serveur (port 3001)              |
-| `npm run dev:client`| Lance uniquement le client (port 5173)               |
-| `npm run build`     | Build de tous les workspaces                          |
-| `npm test`          | Exécute tous les tests (Vitest)                      |
-| `npm run typecheck` | Vérifie les types de tous les workspaces             |
-| `npm run lint`      | Analyse le code avec ESLint                          |
-| `npm run format`    | Formate le code avec Prettier                        |
+| Commande            | Description                                |
+| ------------------- | ------------------------------------------ |
+| `npm run dev`       | Lance serveur + client en parallèle        |
+| `npm test`          | Tous les tests (65 tests)                  |
+| `npm run typecheck` | Vérification TypeScript                    |
+| `npm run lint`      | Analyse ESLint                             |
+| `npm run build`     | Build de production                        |
 
-## Documentation
+---
 
-- [Architecture](./docs/architecture.md)
-- [Règles du jeu](./docs/game-rules.md)
-- [Modèle d'état](./docs/state-model.md)
-- [Contrat Socket.IO](./docs/socket-events.md)
-- [API REST](./docs/api.md)
-- [Développement](./docs/development.md)
-- [Tests](./docs/testing.md)
+## Architecture
+
+```
+client/   Interface React — affichage uniquement
+server/   Express + Socket.IO + moteur de jeu — source de vérité
+shared/   Types et constantes partagés
+docs/     Documentation technique
+```
+
+Voir [docs/architecture.md](./docs/architecture.md) pour le détail.
+
+---
+
+## Roadmap
+
+- **V1** ✅ Créer/rejoindre une salle · Lobby · Partie complète · Scores · Fin de partie
+- **V2** 🔜 Authentification · Historique · Statistiques · Invitations
+- **V3** 🔜 Classement · Parties privées · Spectateurs · Reconnexion · Chat
