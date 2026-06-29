@@ -9,6 +9,6 @@ services:
       - key: DATABASE_URL
         value: file:./prod.db
       - key: CLIENT_ORIGIN
-        value: https://rimchakrouna.github.io/skyjo_a
+        value: https://rimchakrouna.github.io
       - key: NODE_VERSION
         value: "20"

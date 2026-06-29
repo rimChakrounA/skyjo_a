@@ -87,7 +87,7 @@ Le fichier `render.yaml` à la racine configure le service automatiquement.
    | Variable | Valeur |
    | --- | --- |
    | `DATABASE_URL` | `file:./prod.db` |
-   | `CLIENT_ORIGIN` | `https://rimchakrouna.github.io/skyjo_a` |
+   | `CLIENT_ORIGIN` | `https://rimchakrouna.github.io` |
 
 3. L'URL publique du service : **https://skyjo-a.onrender.com**
 

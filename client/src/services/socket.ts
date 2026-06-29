@@ -18,7 +18,7 @@ let socket: AppSocket | null = null;
 /** Renvoie l'instance unique du socket (créée à la première demande). */
 export function getSocket(): AppSocket {
   if (socket === null) {
-    socket = io(SERVER_URL, { transports: ['websocket'], autoConnect: true });
+    socket = io(SERVER_URL, { transports: ['websocket', 'polling'], autoConnect: true });
   }
   return socket;
 }
