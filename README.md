@@ -73,6 +73,49 @@ Voir [docs/architecture.md](./docs/architecture.md) pour le détail.
 
 ---
 
+## Déploiement en ligne
+
+Le backend se déploie sur **Railway**, le frontend sur **Vercel**.
+
+### 1 — Backend sur Railway
+
+1. Crée un compte sur [railway.app](https://railway.app) et installe la CLI :
+   ```bash
+   npm install -g @railway/cli
+   railway login
+   ```
+2. Depuis la racine du projet :
+   ```bash
+   railway init        # crée un nouveau projet
+   railway up          # déploie
+   ```
+3. Dans le dashboard Railway → **Variables**, ajoute :
+
+   | Variable | Valeur |
+   | --- | --- |
+   | `DATABASE_URL` | `file:./prod.db` |
+   | `CLIENT_ORIGIN` | `https://ton-app.vercel.app` *(à remplir après l'étape Vercel)* |
+
+4. Note l'URL publique générée (ex : `https://skyjo-online.up.railway.app`).
+
+### 2 — Frontend sur Vercel
+
+1. Crée un compte sur [vercel.com](https://vercel.com) et importe le dépôt GitHub.
+2. Vercel détecte automatiquement `vercel.json`. Ajoute en **Environment Variables** :
+
+   | Variable | Valeur |
+   | --- | --- |
+   | `VITE_SERVER_URL` | `https://skyjo-online.up.railway.app` *(URL Railway de l'étape 1)* |
+
+3. Clique **Deploy** — le client sera accessible sur `https://ton-app.vercel.app`.
+
+4. Retourne dans Railway et mets à jour `CLIENT_ORIGIN` avec l'URL Vercel.
+
+> **Note** : La base SQLite est stockée dans le conteneur Railway. Les parties terminées
+> sont effacées à chaque redéploiement. Le gameplay (en mémoire) n'est pas affecté.
+
+---
+
 ## Roadmap
 
 - **V1** ✅ Créer/rejoindre une salle · Lobby · Partie complète · Scores · Fin de partie
