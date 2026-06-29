@@ -1,0 +1,31 @@
+// Schéma Prisma : uniquement des données persistantes (jamais l'état d'une partie en cours).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// Une partie terminée, conservée pour l'historique et les statistiques (V2).
+model FinishedGame {
+  id        String               @id @default(uuid())
+  code      String
+  rounds    Int
+  winnerId  String
+  winnerName String
+  createdAt DateTime             @default(now())
+  players   FinishedGamePlayer[]
+}
+
+/// Score final d'un joueur dans une partie terminée.
+model FinishedGamePlayer {
+  id       String       @id @default(uuid())
+  gameId   String
+  playerId String
+  name     String
+  score    Int
+  game     FinishedGame @relation(fields: [gameId], references: [id], onDelete: Cascade)
+}
