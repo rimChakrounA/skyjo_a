@@ -87,9 +87,9 @@ Le fichier `render.yaml` à la racine configure le service automatiquement.
    | Variable | Valeur |
    | --- | --- |
    | `DATABASE_URL` | `file:./prod.db` |
-   | `CLIENT_ORIGIN` | `https://rimchakrouna.github.io` |
+   | `CLIENT_ORIGIN` | `https://rimchakrouna.github.io/skyjo_a` |
 
-3. Note l'URL publique générée (ex : `https://skyjo-server.onrender.com`).
+3. L'URL publique du service : **https://skyjo-a.onrender.com**
 
 ### 2 — Frontend sur GitHub Pages
 
@@ -101,7 +101,7 @@ Le workflow `.github/workflows/deploy.yml` build et publie automatiquement à ch
 
    | Secret | Valeur |
    | --- | --- |
-   | `VITE_SERVER_URL` | `https://skyjo-server.onrender.com` *(URL Render de l'étape 1)* |
+   | `VITE_SERVER_URL` | `https://skyjo-a.onrender.com` |
 
 2. GitHub → **Settings → Pages → Source** → sélectionne la branche `gh-pages`.
 
