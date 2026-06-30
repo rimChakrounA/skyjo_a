@@ -36,6 +36,7 @@ export function App(): JSX.Element {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/room/:code" element={<RoomPage />} />
         <Route path="/game/:code" element={<GamePage />} />
+        <Route path="/join/:code" element={<HomePage />} />
       </Routes>
     </>
   );

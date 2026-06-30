@@ -102,9 +102,23 @@ export function RoomPage(): JSX.Element {
               Code : <strong>{room.code}</strong>
             </p>
           </div>
-          <button type="button" className="secondary" onClick={() => void handleLeave()}>
-            Quitter
-          </button>
+          <div className={styles.headerActions}>
+            <button
+              type="button"
+              className="secondary"
+              title="Copier le lien d'invitation"
+              onClick={() => {
+                const base = window.location.href.split('#')[0];
+                const link = `${base}#/join/${room.code}`;
+                void navigator.clipboard.writeText(link);
+              }}
+            >
+              Copier le lien
+            </button>
+            <button type="button" className="secondary" onClick={() => void handleLeave()}>
+              Quitter
+            </button>
+          </div>
         </header>
 
         <PlayerList players={room.players} currentSocketId={playerId ?? socketId} />
