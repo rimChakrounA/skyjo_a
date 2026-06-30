@@ -4,6 +4,8 @@ export interface SessionEntry {
   roomCode: string;
   playerId: string;
   playerName: string;
+  /** Identifiant du compte utilisateur authentifié (null pour les invités). */
+  userId: string | null;
   /** Timestamp d'expiration en ms (null si le joueur est connecté). */
   expiresAt: number | null;
 }
@@ -19,9 +21,9 @@ export class SessionStore {
   private readonly sessions = new Map<string, SessionEntry>();
 
   /** Crée une nouvelle session et renvoie son token unique. */
-  create(roomCode: string, playerId: string, playerName: string): string {
+  create(roomCode: string, playerId: string, playerName: string, userId: string | null = null): string {
     const token = randomUUID();
-    this.sessions.set(token, { roomCode, playerId, playerName, expiresAt: null });
+    this.sessions.set(token, { roomCode, playerId, playerName, userId, expiresAt: null });
     return token;
   }
 

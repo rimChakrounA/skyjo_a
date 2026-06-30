@@ -4,6 +4,7 @@ import { useSocket } from '@/hooks/useSocket';
 import { GamePage } from '@/pages/GamePage';
 import { HomePage } from '@/pages/HomePage';
 import { LoginPage } from '@/pages/LoginPage';
+import { ProfilePage } from '@/pages/ProfilePage';
 import { RegisterPage } from '@/pages/RegisterPage';
 import { RoomPage } from '@/pages/RoomPage';
 
@@ -32,6 +33,7 @@ export function App(): JSX.Element {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/room/:code" element={<RoomPage />} />
         <Route path="/game/:code" element={<GamePage />} />
       </Routes>

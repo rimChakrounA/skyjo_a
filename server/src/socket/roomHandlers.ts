@@ -18,7 +18,7 @@ export function registerRoomHandlers(io: TypedServer, socket: TypedSocket): void
     try {
       const { playerName } = parsePayload(createRoomSchema, payload);
       const room = createRoom(roomStore, socket.id, playerName);
-      const sessionToken = sessionStore.create(room.code, socket.id, playerName);
+      const sessionToken = sessionStore.create(room.code, socket.id, playerName, socket.data.userId);
       socket.data.roomCode = room.code;
       socket.data.playerId = socket.id;
       void socket.join(room.code);
@@ -33,7 +33,7 @@ export function registerRoomHandlers(io: TypedServer, socket: TypedSocket): void
       const { code, playerName } = parsePayload(joinRoomSchema, payload);
       const normalizedCode = code.toUpperCase();
       const room = joinRoom(roomStore, normalizedCode, socket.id, playerName);
-      const sessionToken = sessionStore.create(room.code, socket.id, playerName);
+      const sessionToken = sessionStore.create(room.code, socket.id, playerName, socket.data.userId);
       socket.data.roomCode = room.code;
       socket.data.playerId = socket.id;
       void socket.join(room.code);

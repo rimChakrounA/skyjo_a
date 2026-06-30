@@ -6,6 +6,7 @@ import { gameActionPayloadSchema } from '../schemas/game.js';
 import { GameSession } from '../services/gameSession.js';
 import type { Room } from '../services/room.js';
 import { roomStore } from '../services/roomStore.js';
+import { sessionStore } from '../services/sessionStore.js';
 import { parsePayload } from '../utils/validate.js';
 import { errorMessage, fail, ok } from './ack.js';
 import { emitRoomUpdate } from './roomHandlers.js';
@@ -22,7 +23,13 @@ async function persistIfFinished(room: Room): Promise<void> {
   }
   room.persisted = true;
   try {
-    await saveFinishedGame(prisma, { code: room.code, ...standings });
+    // Enrichir les joueurs avec leur userId si authentifiés
+    const playersWithUserId = standings.players.map((p) => {
+      const token = sessionStore.findByPlayer(room.code, p.playerId);
+      const userId = token !== undefined ? (sessionStore.get(token)?.userId ?? null) : null;
+      return { ...p, userId };
+    });
+    await saveFinishedGame(prisma, { code: room.code, ...standings, players: playersWithUserId });
   } catch (err) {
     console.error('Échec de la persistance de la partie terminée :', err);
   }
