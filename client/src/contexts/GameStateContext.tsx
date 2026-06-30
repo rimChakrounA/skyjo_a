@@ -9,6 +9,9 @@ export interface GameStateContextValue {
   roomSummary: RoomSummary | null;
   error: string | null;
   closedReason: string | null;
+  /** Code de salle de la revanche reçue du serveur (à consommer pour naviguer). */
+  rematchRoomCode: string | null;
+  clearRematchRoomCode: () => void;
   clearError: () => void;
   reset: () => void;
 }
@@ -21,6 +24,7 @@ export function GameStateProvider({ children }: { children: ReactNode }): JSX.El
   const [roomSummary, setRoomSummary] = useState<RoomSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [closedReason, setClosedReason] = useState<string | null>(null);
+  const [rematchRoomCode, setRematchRoomCode] = useState<string | null>(null);
 
   useEffect(() => {
     const onState = (state: PublicGameState): void => {
@@ -37,31 +41,49 @@ export function GameStateProvider({ children }: { children: ReactNode }): JSX.El
       setClosedReason(data.reason);
       setGameState(null);
     };
+    const onRematch = (room: RoomSummary): void => {
+      setGameState(null);
+      setRoomSummary(room);
+      setRematchRoomCode(room.code);
+    };
 
     socket.on('game:state', onState);
     socket.on('room:update', onRoom);
     socket.on('game:error', onError);
     socket.on('room:closed', onClosed);
+    socket.on('game:rematch', onRematch);
 
     return () => {
       socket.off('game:state', onState);
       socket.off('room:update', onRoom);
       socket.off('game:error', onError);
       socket.off('room:closed', onClosed);
+      socket.off('game:rematch', onRematch);
     };
   }, [socket]);
 
   const clearError = useCallback(() => setError(null), []);
+  const clearRematchRoomCode = useCallback(() => setRematchRoomCode(null), []);
   const reset = useCallback(() => {
     setGameState(null);
     setRoomSummary(null);
     setError(null);
     setClosedReason(null);
+    setRematchRoomCode(null);
   }, []);
 
   const value = useMemo<GameStateContextValue>(
-    () => ({ gameState, roomSummary, error, closedReason, clearError, reset }),
-    [gameState, roomSummary, error, closedReason, clearError, reset],
+    () => ({
+      gameState,
+      roomSummary,
+      error,
+      closedReason,
+      rematchRoomCode,
+      clearRematchRoomCode,
+      clearError,
+      reset,
+    }),
+    [gameState, roomSummary, error, closedReason, rematchRoomCode, clearRematchRoomCode, clearError, reset],
   );
 
   return <GameStateContext.Provider value={value}>{children}</GameStateContext.Provider>;

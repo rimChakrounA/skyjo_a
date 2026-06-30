@@ -10,7 +10,7 @@ import { useGameState } from '@/hooks/useGameState';
 import { useSocket } from '@/hooks/useSocket';
 import { MainLayout } from '@/layouts/MainLayout';
 import { clearSession } from '@/services/identity';
-import { leaveRoom } from '@/services/socket';
+import { leaveRoom, requestRematch } from '@/services/socket';
 import styles from './GamePage.module.css';
 
 function instruction(state: PublicGameState, isMyTurn: boolean): string {
@@ -41,7 +41,7 @@ function instruction(state: PublicGameState, isMyTurn: boolean): string {
 export function GamePage(): JSX.Element {
   const navigate = useNavigate();
   const { socketId, playerId } = useSocket();
-  const { roomSummary, closedReason, reset } = useGameState();
+  const { roomSummary, closedReason, rematchRoomCode, clearRematchRoomCode, reset } = useGameState();
   const game = useGame();
   const { gameState } = game;
 
@@ -51,6 +51,13 @@ export function GamePage(): JSX.Element {
       navigate('/');
     }
   }, [closedReason, navigate]);
+
+  useEffect(() => {
+    if (rematchRoomCode !== null) {
+      clearRematchRoomCode();
+      navigate(`/room/${rematchRoomCode}`);
+    }
+  }, [rematchRoomCode, clearRematchRoomCode, navigate]);
 
   const backToLobby = async (): Promise<void> => {
     clearSession();
@@ -72,20 +79,22 @@ export function GamePage(): JSX.Element {
     );
   }
 
+  const myId = playerId ?? socketId;
+  const isHost = roomSummary?.hostId === myId;
+
   if (gameState.phase === 'gameOver') {
     return (
       <MainLayout>
         <GameOver
           players={gameState.players}
           winnerId={gameState.winnerId}
+          isHost={isHost}
+          onRematch={() => void requestRematch()}
           onBackToLobby={() => void backToLobby()}
         />
       </MainLayout>
     );
   }
-
-  const myId = playerId ?? socketId;
-  const isHost = roomSummary?.hostId === myId;
   const self = gameState.players.find((player) => player.id === myId) ?? null;
   const others = gameState.players.filter((player) => player.id !== myId);
 

@@ -83,3 +83,9 @@ export function restoreSession(sessionToken: string): Promise<AckResponse<RoomJo
     getSocket().emit('session:restore', { sessionToken }, resolve);
   });
 }
+
+export function requestRematch(): Promise<AckResponse<null>> {
+  return new Promise((resolve) => {
+    getSocket().emit('game:rematch', resolve);
+  });
+}

@@ -49,6 +49,7 @@ export interface ClientToServerEvents {
   'room:leave': (ack: Ack<null>) => void;
   'game:start': (ack: Ack<null>) => void;
   'game:action': (payload: GameActionPayload, ack: Ack<null>) => void;
+  'game:rematch': (ack: Ack<null>) => void;
   'session:restore': (payload: RestoreSessionPayload, ack: Ack<RoomJoinedData>) => void;
 }
 
@@ -58,4 +59,6 @@ export interface ServerToClientEvents {
   'room:closed': (data: RoomClosedData) => void;
   'game:state': (state: PublicGameState) => void;
   'game:error': (data: { message: string }) => void;
+  /** Tous les joueurs sont redirigés vers le lobby pour une revanche. */
+  'game:rematch': (room: RoomSummary) => void;
 }

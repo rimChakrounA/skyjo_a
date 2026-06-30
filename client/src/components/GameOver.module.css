@@ -16,3 +16,17 @@
   font-size: 1.1rem;
   color: var(--success);
 }
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.waiting {
+  margin: 0;
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 0.9rem;
+}

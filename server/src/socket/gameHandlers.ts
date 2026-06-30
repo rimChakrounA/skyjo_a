@@ -4,7 +4,7 @@ import { saveFinishedGame } from '../repositories/finishedGameRepository.js';
 import { prisma } from '../repositories/prismaClient.js';
 import { gameActionPayloadSchema } from '../schemas/game.js';
 import { GameSession } from '../services/gameSession.js';
-import type { Room } from '../services/room.js';
+import { toRoomSummary, type Room } from '../services/room.js';
 import { roomStore } from '../services/roomStore.js';
 import { sessionStore } from '../services/sessionStore.js';
 import { parsePayload } from '../utils/validate.js';
@@ -90,6 +90,24 @@ export function registerGameHandlers(io: TypedServer, socket: TypedSocket): void
       ack(ok(null));
       emitRoomUpdate(io, room);
       await broadcastGameState(io, room);
+    } catch (err) {
+      ack(fail(errorMessage(err)));
+    }
+  });
+
+  socket.on('game:rematch', (ack) => {
+    try {
+      const room = requireHostRoom(socket);
+      if (room.game === null || room.game.phase !== 'gameOver') {
+        throw new GameError('La revanche n\'est disponible qu\'en fin de partie.');
+      }
+      // Réinitialiser la salle vers le lobby
+      room.status = 'lobby';
+      room.game = null;
+      room.persisted = false;
+      ack(ok(null));
+      // Notifier tous les joueurs de la revanche
+      io.to(room.code).emit('game:rematch', toRoomSummary(room));
     } catch (err) {
       ack(fail(errorMessage(err)));
     }

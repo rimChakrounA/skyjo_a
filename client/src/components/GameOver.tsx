@@ -5,10 +5,18 @@ import styles from './GameOver.module.css';
 export interface GameOverProps {
   players: PublicPlayer[];
   winnerId: string | null;
+  isHost: boolean;
+  onRematch: () => void;
   onBackToLobby: () => void;
 }
 
-export function GameOver({ players, winnerId, onBackToLobby }: GameOverProps): JSX.Element {
+export function GameOver({
+  players,
+  winnerId,
+  isHost,
+  onRematch,
+  onBackToLobby,
+}: GameOverProps): JSX.Element {
   const winner = players.find((player) => player.id === winnerId) ?? null;
 
   return (
@@ -20,9 +28,19 @@ export function GameOver({ players, winnerId, onBackToLobby }: GameOverProps): J
         </p>
       )}
       <Scoreboard players={players} roundEnderId={null} />
-      <button type="button" onClick={onBackToLobby}>
-        Retour à l’accueil
-      </button>
+      <div className={styles.actions}>
+        {isHost && (
+          <button type="button" onClick={onRematch}>
+            Rejouer
+          </button>
+        )}
+        <button type="button" className="secondary" onClick={onBackToLobby}>
+          Retour à l'accueil
+        </button>
+      </div>
+      {!isHost && (
+        <p className={styles.waiting}>En attente de la décision de l'hôte…</p>
+      )}
     </div>
   );
 }
