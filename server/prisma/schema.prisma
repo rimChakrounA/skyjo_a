@@ -9,23 +9,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/// Une partie terminée, conservée pour l'historique et les statistiques (V2).
+/// Compte utilisateur persistant (V2).
+model User {
+  id           String               @id @default(uuid())
+  username     String               @unique
+  passwordHash String
+  createdAt    DateTime             @default(now())
+  gamePlayers  FinishedGamePlayer[]
+}
+
+/// Une partie terminée, conservée pour l'historique et les statistiques.
 model FinishedGame {
-  id        String               @id @default(uuid())
-  code      String
-  rounds    Int
-  winnerId  String
+  id         String               @id @default(uuid())
+  code       String
+  rounds     Int
+  winnerId   String
   winnerName String
-  createdAt DateTime             @default(now())
-  players   FinishedGamePlayer[]
+  createdAt  DateTime             @default(now())
+  players    FinishedGamePlayer[]
 }
 
 /// Score final d'un joueur dans une partie terminée.
 model FinishedGamePlayer {
-  id       String       @id @default(uuid())
+  id       String        @id @default(uuid())
   gameId   String
   playerId String
   name     String
   score    Int
-  game     FinishedGame @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  /// Lien vers le compte utilisateur si le joueur était authentifié.
+  userId   String?
+  game     FinishedGame  @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  user     User?         @relation(fields: [userId], references: [id])
 }

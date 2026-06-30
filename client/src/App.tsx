@@ -3,6 +3,8 @@ import { Route, Routes, useNavigate } from 'react-router-dom';
 import { useSocket } from '@/hooks/useSocket';
 import { GamePage } from '@/pages/GamePage';
 import { HomePage } from '@/pages/HomePage';
+import { LoginPage } from '@/pages/LoginPage';
+import { RegisterPage } from '@/pages/RegisterPage';
 import { RoomPage } from '@/pages/RoomPage';
 
 function ReconnectNavigator(): null {
@@ -28,6 +30,8 @@ export function App(): JSX.Element {
       <ReconnectNavigator />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="/room/:code" element={<RoomPage />} />
         <Route path="/game/:code" element={<GamePage />} />
       </Routes>

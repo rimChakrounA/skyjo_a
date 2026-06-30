@@ -8,6 +8,7 @@ import type { AckResponse } from '@shared/types/socket.js';
 import type { GameAction } from '@shared/types/actions.js';
 import { io, type Socket } from 'socket.io-client';
 import { saveSession } from './identity.js';
+import { loadToken } from './authService.js';
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL ?? 'http://localhost:3001';
 
@@ -19,7 +20,11 @@ let socket: AppSocket | null = null;
 /** Renvoie l'instance unique du socket (créée à la première demande). */
 export function getSocket(): AppSocket {
   if (socket === null) {
-    socket = io(SERVER_URL, { transports: ['websocket', 'polling'], autoConnect: true });
+    socket = io(SERVER_URL, {
+      transports: ['websocket', 'polling'],
+      autoConnect: true,
+      auth: { token: loadToken() ?? '' },
+    });
   }
   return socket;
 }

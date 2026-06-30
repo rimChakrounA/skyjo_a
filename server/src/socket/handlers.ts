@@ -10,6 +10,7 @@ export function registerSocketHandlers(io: TypedServer): void {
   io.on('connection', (socket) => {
     socket.data.roomCode = null;
     socket.data.playerId = null;
+    // socket.data.userId est initialisé par le middleware dans io.ts
 
     registerRoomHandlers(io, socket);
     registerGameHandlers(io, socket);
