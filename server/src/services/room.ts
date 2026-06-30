@@ -6,6 +6,7 @@ export interface Room {
   code: string;
   hostId: string;
   status: RoomStatus;
+  minPlayers: number;
   maxPlayers: number;
   players: RoomPlayer[];
   /** Session de partie active, présente uniquement lorsque le statut est `in-game`. */
@@ -20,6 +21,7 @@ export function toRoomSummary(room: Room): RoomSummary {
     code: room.code,
     status: room.status,
     hostId: room.hostId,
+    minPlayers: room.minPlayers,
     maxPlayers: room.maxPlayers,
     players: room.players.map((player) => ({ ...player })),
   };

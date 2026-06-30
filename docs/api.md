@@ -28,3 +28,38 @@ Récupère une partie terminée par son identifiant.
   "players": [{ "playerId": "...", "name": "Alice", "score": 42 }]
 }
 ```
+
+## `GET /api/rooms`
+
+Liste publique des salles en lobby et des parties en cours (sans cartes cachées).
+
+- `200` : tableau de salles actives.
+
+```json
+{
+  "rooms": [
+    {
+      "code": "ABCDE",
+      "status": "lobby",
+      "hostName": "Alice",
+      "playerCount": 2,
+      "connectedCount": 2,
+      "minPlayers": 2,
+      "maxPlayers": 6
+    },
+    {
+      "code": "FGHIJ",
+      "status": "in-game",
+      "hostName": "Bob",
+      "playerCount": 4,
+      "connectedCount": 4,
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "round": 2,
+      "phase": "playing",
+      "currentPlayerName": "Carol",
+      "standings": [{ "name": "Alice", "totalScore": 45 }]
+    }
+  ]
+}
+```

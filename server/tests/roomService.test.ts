@@ -9,7 +9,23 @@ describe('createRoom', () => {
     expect(room.players).toHaveLength(1);
     expect(room.players[0]?.isHost).toBe(true);
     expect(room.hostId).toBe('host');
+    expect(room.minPlayers).toBe(2);
+    expect(room.maxPlayers).toBe(8);
     expect(store.has(room.code)).toBe(true);
+  });
+
+  it('accepte des bornes min/max personnalisées', () => {
+    const store = new RoomStore();
+    const room = createRoom(store, 'host', 'Hôte', { minPlayers: 3, maxPlayers: 5 });
+    expect(room.minPlayers).toBe(3);
+    expect(room.maxPlayers).toBe(5);
+  });
+
+  it('refuse un minimum supérieur au maximum', () => {
+    const store = new RoomStore();
+    expect(() => createRoom(store, 'host', 'Hôte', { minPlayers: 6, maxPlayers: 4 })).toThrow(
+      /minimum/i,
+    );
   });
 });
 

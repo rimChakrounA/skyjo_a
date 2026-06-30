@@ -1,4 +1,3 @@
-import { MIN_PLAYERS } from '@shared/constants/game.js';
 import { GameError } from '../game/errors.js';
 import { saveFinishedGame } from '../repositories/finishedGameRepository.js';
 import { prisma } from '../repositories/prismaClient.js';
@@ -70,8 +69,8 @@ export function registerGameHandlers(io: TypedServer, socket: TypedSocket): void
       const room = requireHostRoom(socket);
 
       if (room.status === 'lobby') {
-        if (room.players.length < MIN_PLAYERS) {
-          throw new GameError(`Il faut au moins ${MIN_PLAYERS} joueurs pour démarrer.`);
+        if (room.players.length < room.minPlayers) {
+          throw new GameError(`Il faut au moins ${room.minPlayers} joueurs pour démarrer.`);
         }
         room.game = new GameSession(
           room.players.map((player) => ({

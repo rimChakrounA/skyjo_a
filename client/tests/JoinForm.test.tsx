@@ -2,10 +2,18 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { JoinForm } from '@/components/JoinForm';
 
+const defaultProps = {
+  minPlayers: 2,
+  maxPlayers: 8,
+  onMinPlayersChange: vi.fn(),
+  onMaxPlayersChange: vi.fn(),
+};
+
 describe('JoinForm', () => {
   it('affiche un message d’erreur', () => {
     render(
       <JoinForm
+        {...defaultProps}
         name=""
         code=""
         busy={false}
@@ -23,6 +31,7 @@ describe('JoinForm', () => {
     const onCreate = vi.fn();
     render(
       <JoinForm
+        {...defaultProps}
         name="Alice"
         code=""
         busy={false}
@@ -41,6 +50,7 @@ describe('JoinForm', () => {
     const onNameChange = vi.fn();
     render(
       <JoinForm
+        {...defaultProps}
         name=""
         code=""
         busy={false}

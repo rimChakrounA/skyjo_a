@@ -29,9 +29,21 @@ export function getSocket(): AppSocket {
   return socket;
 }
 
-export function createRoom(playerName: string): Promise<AckResponse<RoomJoinedData>> {
+export function createRoom(
+  playerName: string,
+  options: { minPlayers?: number; maxPlayers?: number } = {},
+): Promise<AckResponse<RoomJoinedData>> {
   return new Promise((resolve) => {
-    getSocket().emit('room:create', { playerName }, (response) => {
+    const payload: { playerName: string; minPlayers?: number; maxPlayers?: number } = {
+      playerName,
+    };
+    if (options.minPlayers !== undefined) {
+      payload.minPlayers = options.minPlayers;
+    }
+    if (options.maxPlayers !== undefined) {
+      payload.maxPlayers = options.maxPlayers;
+    }
+    getSocket().emit('room:create', payload, (response) => {
       if (response.ok) {
         saveSession({
           sessionToken: response.data.sessionToken,

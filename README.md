@@ -116,4 +116,4 @@ Le client sera accessible sur **https://rimchakrouna.github.io/skyjo_a/**.
 
 - **V1** ✅ Créer/rejoindre une salle · Lobby · Partie complète · Scores · Fin de partie
 - **V2** 🔜 Authentification · Historique · Statistiques · Invitations
-- **V3** 🔜 Classement · Parties privées · Spectateurs · Reconnexion · Chat
+- **V3** 🔜 Classement · Parties privées · Reconnexion · Chat

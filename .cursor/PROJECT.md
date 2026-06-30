@@ -275,7 +275,6 @@ Les tests servent également de documentation du comportement attendu.
 
 - Classement
 - Parties privées
-- Spectateurs
 - Reconnexion automatique
 - Chat
 

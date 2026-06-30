@@ -7,6 +7,7 @@ function sampleRoom(code: string): Room {
     code,
     hostId: 'p1',
     status: 'lobby',
+    minPlayers: 2,
     maxPlayers: 8,
     players: [{ id: 'p1', name: 'Hôte', isHost: true, connected: true }],
     game: null,

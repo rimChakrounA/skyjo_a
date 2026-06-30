@@ -16,8 +16,12 @@ export function emitRoomUpdate(io: TypedServer, room: Room): void {
 export function registerRoomHandlers(io: TypedServer, socket: TypedSocket): void {
   socket.on('room:create', (payload, ack) => {
     try {
-      const { playerName } = parsePayload(createRoomSchema, payload);
-      const room = createRoom(roomStore, socket.id, playerName);
+      const { playerName, minPlayers, maxPlayers } = parsePayload(createRoomSchema, payload);
+      const config =
+        minPlayers !== undefined || maxPlayers !== undefined
+          ? { ...(minPlayers !== undefined ? { minPlayers } : {}), ...(maxPlayers !== undefined ? { maxPlayers } : {}) }
+          : {};
+      const room = createRoom(roomStore, socket.id, playerName, config);
       const sessionToken = sessionStore.create(room.code, socket.id, playerName, socket.data.userId);
       socket.data.roomCode = room.code;
       socket.data.playerId = socket.id;

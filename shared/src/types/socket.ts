@@ -14,6 +14,8 @@ export type Ack<T> = (response: AckResponse<T>) => void;
 
 export interface CreateRoomPayload {
   playerName: string;
+  minPlayers?: number;
+  maxPlayers?: number;
 }
 
 export interface JoinRoomPayload {

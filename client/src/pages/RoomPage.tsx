@@ -1,4 +1,3 @@
-import { MIN_PLAYERS } from '@shared/constants/game.js';
 import type { RoomSummary } from '@shared/types/room.js';
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -90,7 +89,7 @@ export function RoomPage(): JSX.Element {
   }
 
   const isHost = room.hostId === (playerId ?? socketId);
-  const canStart = isHost && room.players.length >= MIN_PLAYERS;
+  const canStart = isHost && room.players.length >= room.minPlayers;
 
   return (
     <MainLayout>
@@ -99,7 +98,8 @@ export function RoomPage(): JSX.Element {
           <div>
             <h2 className={styles.heading}>Salle</h2>
             <p className={styles.code}>
-              Code : <strong>{room.code}</strong>
+              Code : <strong>{room.code}</strong> · {room.players.length} / {room.maxPlayers}{' '}
+              joueurs (min. {room.minPlayers})
             </p>
           </div>
           <div className={styles.headerActions}>
@@ -133,8 +133,8 @@ export function RoomPage(): JSX.Element {
           <p className={styles.waiting}>En attente du lancement par l’hôte…</p>
         )}
 
-        {isHost && room.players.length < MIN_PLAYERS && (
-          <p className={styles.hint}>Il faut au moins {MIN_PLAYERS} joueurs pour commencer.</p>
+        {isHost && room.players.length < room.minPlayers && (
+          <p className={styles.hint}>Il faut au moins {room.minPlayers} joueurs pour commencer.</p>
         )}
       </section>
     </MainLayout>

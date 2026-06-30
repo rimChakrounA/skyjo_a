@@ -6,6 +6,7 @@ import { authRouter } from './routes/auth.js';
 import { gamesRouter } from './routes/games.js';
 import { healthRouter } from './routes/health.js';
 import { profileRouter } from './routes/profile.js';
+import { roomsRouter } from './routes/rooms.js';
 
 /** Construit l'application Express avec ses middlewares et ses routes REST. */
 export function createApp(): Express {
@@ -16,6 +17,7 @@ export function createApp(): Express {
 
   app.use('/api', healthRouter);
   app.use('/api', gamesRouter);
+  app.use('/api', roomsRouter);
   app.use('/api/auth', authRouter);
   app.use('/api', profileRouter);
 

@@ -1,8 +1,24 @@
 import { randomInt } from 'node:crypto';
-import { MAX_PLAYERS, ROOM_CODE_LENGTH } from '@shared/constants/game.js';
+import { MAX_PLAYERS, MIN_PLAYERS, ROOM_CODE_LENGTH } from '@shared/constants/game.js';
 import { GameError } from '../game/errors.js';
 import type { Room } from './room.js';
 import type { RoomStore } from './roomStore.js';
+
+/** Options de création d'une salle (bornes de joueurs). */
+export interface CreateRoomConfig {
+  minPlayers?: number;
+  maxPlayers?: number;
+}
+
+/** Valide les bornes min/max choisies par l'hôte. */
+export function validatePlayerBounds(minPlayers: number, maxPlayers: number): void {
+  if (minPlayers < MIN_PLAYERS || maxPlayers > MAX_PLAYERS) {
+    throw new GameError(`Le nombre de joueurs doit être entre ${MIN_PLAYERS} et ${MAX_PLAYERS}.`);
+  }
+  if (minPlayers > maxPlayers) {
+    throw new GameError('Le minimum ne peut pas dépasser le maximum.');
+  }
+}
 
 /** Alphabet sans caractères ambigus (pas de O/0, I/1, etc.). */
 const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
@@ -25,13 +41,23 @@ export function generateUniqueCode(store: RoomStore): string {
 }
 
 /** Crée une salle et y place l'hôte. */
-export function createRoom(store: RoomStore, hostId: string, hostName: string): Room {
+export function createRoom(
+  store: RoomStore,
+  hostId: string,
+  hostName: string,
+  config: CreateRoomConfig = {},
+): Room {
+  const minPlayers = config.minPlayers ?? MIN_PLAYERS;
+  const maxPlayers = config.maxPlayers ?? MAX_PLAYERS;
+  validatePlayerBounds(minPlayers, maxPlayers);
+
   const code = generateUniqueCode(store);
   const room: Room = {
     code,
     hostId,
     status: 'lobby',
-    maxPlayers: MAX_PLAYERS,
+    minPlayers,
+    maxPlayers,
     players: [{ id: hostId, name: hostName, isHost: true, connected: true }],
     game: null,
     persisted: false,
