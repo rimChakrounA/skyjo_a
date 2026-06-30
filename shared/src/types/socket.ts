@@ -25,15 +25,21 @@ export interface GameActionPayload {
   action: GameAction;
 }
 
-/** Données renvoyées lors de la création ou de la jonction d'une salle. */
+/** Données renvoyées lors de la création, de la jonction ou de la restauration d'une salle. */
 export interface RoomJoinedData {
   room: RoomSummary;
   playerId: string;
+  /** Token de session permettant la reconnexion transparente. */
+  sessionToken: string;
 }
 
 /** Raison de fermeture d'une salle. */
 export interface RoomClosedData {
   reason: string;
+}
+
+export interface RestoreSessionPayload {
+  sessionToken: string;
 }
 
 /** Événements émis par le client vers le serveur. */
@@ -43,6 +49,7 @@ export interface ClientToServerEvents {
   'room:leave': (ack: Ack<null>) => void;
   'game:start': (ack: Ack<null>) => void;
   'game:action': (payload: GameActionPayload, ack: Ack<null>) => void;
+  'session:restore': (payload: RestoreSessionPayload, ack: Ack<RoomJoinedData>) => void;
 }
 
 /** Événements émis par le serveur vers le client. */

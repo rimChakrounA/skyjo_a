@@ -7,6 +7,7 @@ import type {
 import type { AckResponse } from '@shared/types/socket.js';
 import type { GameAction } from '@shared/types/actions.js';
 import { io, type Socket } from 'socket.io-client';
+import { saveSession } from './identity.js';
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL ?? 'http://localhost:3001';
 
@@ -25,13 +26,31 @@ export function getSocket(): AppSocket {
 
 export function createRoom(playerName: string): Promise<AckResponse<RoomJoinedData>> {
   return new Promise((resolve) => {
-    getSocket().emit('room:create', { playerName }, resolve);
+    getSocket().emit('room:create', { playerName }, (response) => {
+      if (response.ok) {
+        saveSession({
+          sessionToken: response.data.sessionToken,
+          roomCode: response.data.room.code,
+          playerId: response.data.playerId,
+        });
+      }
+      resolve(response);
+    });
   });
 }
 
 export function joinRoom(code: string, playerName: string): Promise<AckResponse<RoomJoinedData>> {
   return new Promise((resolve) => {
-    getSocket().emit('room:join', { code, playerName }, resolve);
+    getSocket().emit('room:join', { code, playerName }, (response) => {
+      if (response.ok) {
+        saveSession({
+          sessionToken: response.data.sessionToken,
+          roomCode: response.data.room.code,
+          playerId: response.data.playerId,
+        });
+      }
+      resolve(response);
+    });
   });
 }
 
@@ -51,5 +70,11 @@ export function sendAction(action: GameAction): Promise<AckResponse<null>> {
   const payload: GameActionPayload = { action };
   return new Promise((resolve) => {
     getSocket().emit('game:action', payload, resolve);
+  });
+}
+
+export function restoreSession(sessionToken: string): Promise<AckResponse<RoomJoinedData>> {
+  return new Promise((resolve) => {
+    getSocket().emit('session:restore', { sessionToken }, resolve);
   });
 }

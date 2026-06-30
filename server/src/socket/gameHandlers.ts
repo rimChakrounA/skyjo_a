@@ -34,8 +34,9 @@ export async function broadcastGameState(io: TypedServer, room: Room): Promise<v
     return;
   }
   const sockets = await io.in(room.code).fetchSockets();
-  for (const socket of sockets) {
-    socket.emit('game:state', room.game.publicStateFor(socket.id));
+  for (const s of sockets) {
+    const viewerId = s.data.playerId ?? s.id;
+    s.emit('game:state', room.game.publicStateFor(viewerId));
   }
 }
 
@@ -49,7 +50,8 @@ function requireHostRoom(socket: TypedSocket): Room {
   if (room === undefined) {
     throw new GameError('Salle introuvable.');
   }
-  if (room.hostId !== socket.id) {
+  const playerId = socket.data.playerId ?? socket.id;
+  if (room.hostId !== playerId) {
     throw new GameError("Seul l'hôte peut effectuer cette action.");
   }
   return room;
@@ -91,10 +93,11 @@ export function registerGameHandlers(io: TypedServer, socket: TypedSocket): void
       const code = socket.data.roomCode;
       const room = code !== null ? roomStore.get(code) : undefined;
       if (room === undefined || room.game === null) {
-        throw new GameError("Aucune partie en cours dans cette salle.");
+        throw new GameError('Aucune partie en cours dans cette salle.');
       }
       const { action } = parsePayload(gameActionPayloadSchema, payload);
-      room.game.dispatch(socket.id, action);
+      const playerId = socket.data.playerId ?? socket.id;
+      room.game.dispatch(playerId, action);
       ack(ok(null));
       await broadcastGameState(io, room);
       await persistIfFinished(room);

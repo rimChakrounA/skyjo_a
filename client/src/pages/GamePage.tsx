@@ -9,6 +9,7 @@ import { useGame } from '@/hooks/useGame';
 import { useGameState } from '@/hooks/useGameState';
 import { useSocket } from '@/hooks/useSocket';
 import { MainLayout } from '@/layouts/MainLayout';
+import { clearSession } from '@/services/identity';
 import { leaveRoom } from '@/services/socket';
 import styles from './GamePage.module.css';
 
@@ -39,7 +40,7 @@ function instruction(state: PublicGameState, isMyTurn: boolean): string {
 
 export function GamePage(): JSX.Element {
   const navigate = useNavigate();
-  const { socketId } = useSocket();
+  const { socketId, playerId } = useSocket();
   const { roomSummary, closedReason, reset } = useGameState();
   const game = useGame();
   const { gameState } = game;
@@ -52,6 +53,7 @@ export function GamePage(): JSX.Element {
   }, [closedReason, navigate]);
 
   const backToLobby = async (): Promise<void> => {
+    clearSession();
     await leaveRoom();
     reset();
     navigate('/');
@@ -82,9 +84,10 @@ export function GamePage(): JSX.Element {
     );
   }
 
-  const isHost = roomSummary?.hostId === socketId;
-  const self = gameState.players.find((player) => player.id === socketId) ?? null;
-  const others = gameState.players.filter((player) => player.id !== socketId);
+  const myId = playerId ?? socketId;
+  const isHost = roomSummary?.hostId === myId;
+  const self = gameState.players.find((player) => player.id === myId) ?? null;
+  const others = gameState.players.filter((player) => player.id !== myId);
 
   return (
     <MainLayout>
@@ -127,8 +130,8 @@ export function GamePage(): JSX.Element {
               player={self}
               isSelf
               isCurrent={gameState.currentPlayerId === self.id}
-              canClick={(index) => game.canClickCard(self.id, index)}
-              onCardClick={(index) => game.onCardClick(self.id, index)}
+              canClick={(index) => game.canClickCard(myId ?? self.id, index)}
+              onCardClick={(index) => game.onCardClick(myId ?? self.id, index)}
             />
           )}
           {others.map((player) => (

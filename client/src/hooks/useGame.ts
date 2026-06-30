@@ -14,8 +14,8 @@ export interface UseGameResult {
   canDraw: boolean;
   canTake: boolean;
   canDiscardDrawn: boolean;
-  canClickCard: (playerId: string, index: number) => boolean;
-  onCardClick: (playerId: string, index: number) => void;
+  canClickCard: (targetPlayerId: string, index: number) => boolean;
+  onCardClick: (targetPlayerId: string, index: number) => void;
   draw: () => void;
   takeDiscard: () => void;
   discardDrawn: () => void;
@@ -27,11 +27,11 @@ function countFaceUp(player: PublicPlayer): number {
 }
 
 export function useGame(): UseGameResult {
-  const { socketId } = useSocket();
+  const { playerId } = useSocket();
   const { gameState, error } = useGameState();
 
-  const self = gameState?.players.find((player) => player.id === socketId) ?? null;
-  const isMyTurn = gameState !== null && gameState.currentPlayerId === socketId;
+  const self = gameState?.players.find((player) => player.id === playerId) ?? null;
+  const isMyTurn = gameState !== null && gameState.currentPlayerId === playerId;
 
   const inPlay = gameState?.phase === 'playing' || gameState?.phase === 'lastRound';
   const canDraw = Boolean(isMyTurn && inPlay && gameState?.turnPhase === 'chooseSource');
@@ -48,8 +48,9 @@ export function useGame(): UseGameResult {
   }, []);
 
   const canClickCard = useCallback(
-    (playerId: string, index: number): boolean => {
-      if (gameState === null || self === null || playerId !== socketId) {
+    (targetPlayerId: string, index: number): boolean => {
+      // On ne peut interagir qu'avec ses propres cartes
+      if (gameState === null || self === null || targetPlayerId !== playerId) {
         return false;
       }
       const cell = self.cells[index];
@@ -70,12 +71,12 @@ export function useGame(): UseGameResult {
       }
       return false;
     },
-    [gameState, self, socketId, isMyTurn],
+    [gameState, self, playerId, isMyTurn],
   );
 
   const onCardClick = useCallback(
-    (playerId: string, index: number): void => {
-      if (!canClickCard(playerId, index) || gameState === null) {
+    (targetPlayerId: string, index: number): void => {
+      if (!canClickCard(targetPlayerId, index) || gameState === null) {
         return;
       }
       if (gameState.phase === 'initialReveal') {
@@ -111,7 +112,7 @@ export function useGame(): UseGameResult {
   return {
     gameState,
     error,
-    selfId: socketId,
+    selfId: playerId,
     isMyTurn,
     canDraw,
     canTake,

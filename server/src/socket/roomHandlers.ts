@@ -2,6 +2,7 @@ import { createRoomSchema, joinRoomSchema } from '../schemas/room.js';
 import { createRoom, joinRoom, leaveRoom } from '../services/roomService.js';
 import { toRoomSummary, type Room } from '../services/room.js';
 import { roomStore } from '../services/roomStore.js';
+import { sessionStore } from '../services/sessionStore.js';
 import { parsePayload } from '../utils/validate.js';
 import { errorMessage, fail, ok } from './ack.js';
 import type { TypedServer, TypedSocket } from './types.js';
@@ -17,9 +18,11 @@ export function registerRoomHandlers(io: TypedServer, socket: TypedSocket): void
     try {
       const { playerName } = parsePayload(createRoomSchema, payload);
       const room = createRoom(roomStore, socket.id, playerName);
+      const sessionToken = sessionStore.create(room.code, socket.id, playerName);
       socket.data.roomCode = room.code;
+      socket.data.playerId = socket.id;
       void socket.join(room.code);
-      ack(ok({ room: toRoomSummary(room), playerId: socket.id }));
+      ack(ok({ room: toRoomSummary(room), playerId: socket.id, sessionToken }));
     } catch (err) {
       ack(fail(errorMessage(err)));
     }
@@ -30,9 +33,11 @@ export function registerRoomHandlers(io: TypedServer, socket: TypedSocket): void
       const { code, playerName } = parsePayload(joinRoomSchema, payload);
       const normalizedCode = code.toUpperCase();
       const room = joinRoom(roomStore, normalizedCode, socket.id, playerName);
+      const sessionToken = sessionStore.create(room.code, socket.id, playerName);
       socket.data.roomCode = room.code;
+      socket.data.playerId = socket.id;
       void socket.join(room.code);
-      ack(ok({ room: toRoomSummary(room), playerId: socket.id }));
+      ack(ok({ room: toRoomSummary(room), playerId: socket.id, sessionToken }));
       emitRoomUpdate(io, room);
     } catch (err) {
       ack(fail(errorMessage(err)));
@@ -42,16 +47,24 @@ export function registerRoomHandlers(io: TypedServer, socket: TypedSocket): void
   socket.on('room:leave', (ack) => {
     try {
       const code = socket.data.roomCode;
-      if (code === null) {
+      const playerId = socket.data.playerId ?? socket.id;
+
+      if (code !== null) {
+        // Supprimer la session lors d'un départ volontaire
+        const token = sessionStore.findByPlayer(code, playerId);
+        if (token !== undefined) {
+          sessionStore.delete(token);
+        }
+        const room = leaveRoom(roomStore, code, playerId);
+        void socket.leave(code);
+        socket.data.roomCode = null;
+        socket.data.playerId = null;
         ack(ok(null));
-        return;
-      }
-      const room = leaveRoom(roomStore, code, socket.id);
-      void socket.leave(code);
-      socket.data.roomCode = null;
-      ack(ok(null));
-      if (room !== null) {
-        emitRoomUpdate(io, room);
+        if (room !== null) {
+          emitRoomUpdate(io, room);
+        }
+      } else {
+        ack(ok(null));
       }
     } catch (err) {
       ack(fail(errorMessage(err)));

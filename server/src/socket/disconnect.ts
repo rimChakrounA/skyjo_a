@@ -4,9 +4,9 @@ import { emitRoomUpdate } from './roomHandlers.js';
 import type { TypedServer, TypedSocket } from './types.js';
 
 /**
- * Gère la déconnexion d'un socket.
- * En lobby, le joueur est retiré de la salle. La gestion en cours de partie
- * est ajoutée par les gestionnaires de jeu.
+ * Gère la déconnexion d'un socket en lobby.
+ * Le joueur est retiré de la salle ; la gestion en cours de partie
+ * est assurée par `handleGameDisconnect`.
  */
 export function handleLobbyDisconnect(io: TypedServer, socket: TypedSocket): void {
   const code = socket.data.roomCode;
@@ -17,7 +17,8 @@ export function handleLobbyDisconnect(io: TypedServer, socket: TypedSocket): voi
   if (room === undefined || room.status !== 'lobby') {
     return;
   }
-  const updated = leaveRoom(roomStore, code, socket.id);
+  const playerId = socket.data.playerId ?? socket.id;
+  const updated = leaveRoom(roomStore, code, playerId);
   if (updated !== null) {
     emitRoomUpdate(io, updated);
   }

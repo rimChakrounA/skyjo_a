@@ -7,6 +7,8 @@ export type InterServerEvents = Record<string, never>;
 /** Données attachées à chaque socket. */
 export interface SocketData {
   roomCode: string | null;
+  /** Identifiant logique du joueur, stable entre reconnexions. */
+  playerId: string | null;
 }
 
 export type TypedServer = Server<

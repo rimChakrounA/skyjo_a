@@ -7,6 +7,7 @@ import { useGameState } from '@/hooks/useGameState';
 import { usePlayerIdentity } from '@/hooks/usePlayerIdentity';
 import { useSocket } from '@/hooks/useSocket';
 import { MainLayout } from '@/layouts/MainLayout';
+import { clearSession } from '@/services/identity';
 import { joinRoom, leaveRoom, startGame } from '@/services/socket';
 import type { RoomLocationState } from '@/types/navigation';
 import styles from './RoomPage.module.css';
@@ -15,7 +16,7 @@ export function RoomPage(): JSX.Element {
   const { code = '' } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { socket, socketId } = useSocket();
+  const { socket, socketId, playerId } = useSocket();
   const { name } = usePlayerIdentity();
   const { gameState, closedReason, reset } = useGameState();
 
@@ -74,6 +75,7 @@ export function RoomPage(): JSX.Element {
   };
 
   const handleLeave = async (): Promise<void> => {
+    clearSession();
     await leaveRoom();
     reset();
     navigate('/');
@@ -87,7 +89,7 @@ export function RoomPage(): JSX.Element {
     );
   }
 
-  const isHost = room.hostId === socketId;
+  const isHost = room.hostId === (playerId ?? socketId);
   const canStart = isHost && room.players.length >= MIN_PLAYERS;
 
   return (
@@ -105,7 +107,7 @@ export function RoomPage(): JSX.Element {
           </button>
         </header>
 
-        <PlayerList players={room.players} currentSocketId={socketId} />
+        <PlayerList players={room.players} currentSocketId={playerId ?? socketId} />
 
         {error !== null && <p className={styles.error}>{error}</p>}
 

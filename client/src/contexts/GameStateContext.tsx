@@ -1,6 +1,7 @@
 import type { PublicGameState } from '@shared/types/game.js';
 import type { RoomSummary } from '@shared/types/room.js';
 import { createContext, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { clearSession } from '@/services/identity';
 import { useSocket } from '@/hooks/useSocket';
 
 export interface GameStateContextValue {
@@ -32,6 +33,7 @@ export function GameStateProvider({ children }: { children: ReactNode }): JSX.El
       setError(data.message);
     };
     const onClosed = (data: { reason: string }): void => {
+      clearSession();
       setClosedReason(data.reason);
       setGameState(null);
     };
