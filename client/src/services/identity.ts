@@ -1,7 +1,6 @@
 const NAME_KEY = 'skyjo.playerName';
 const GUEST_READY_KEY = 'skyjo.guestReady';
 const SESSION_KEY = 'skyjo.session';
-const SESSION_CHANGED = 'skyjo:session-changed';
 
 type SessionListener = () => void;
 const sessionListeners = new Set<SessionListener>();

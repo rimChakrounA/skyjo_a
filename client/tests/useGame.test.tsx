@@ -18,7 +18,7 @@ function makeState(overrides: Partial<PublicGameState> = {}): PublicGameState {
     phase: 'initialReveal',
     round: 1,
     currentPlayerId: 'p1',
-    turnPhase: null,
+    turnPhase: 'chooseSource',
     discardTop: 10,
     deckCount: 100,
     drawnCard: null,

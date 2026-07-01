@@ -47,6 +47,6 @@ describe('Board', () => {
     const { container } = render(
       <Board player={makePlayer()} isSelf isCurrent compact canClick={() => false} />,
     );
-    expect(container.firstChild).toHaveClass(styles.current);
+    expect(container.firstChild).toHaveClass(styles.current!);
   });
 });

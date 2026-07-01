@@ -292,12 +292,12 @@ export function HomePage(): JSX.Element {
 
 
   const handleGuestBrandClick = user === null ? resetLanding : undefined;
-
-
+  const brandClickProps =
+    handleGuestBrandClick !== undefined ? { onBrandClick: handleGuestBrandClick } : {};
 
   return (
 
-    <MainLayout variant="scene" onBrandClick={handleGuestBrandClick}>
+    <MainLayout variant="scene" {...brandClickProps}>
 
       <SceneShell
 
@@ -329,7 +329,7 @@ export function HomePage(): JSX.Element {
 
       >
 
-          <SkyjoLogo onClick={handleGuestBrandClick} />
+          <SkyjoLogo {...(handleGuestBrandClick !== undefined ? { onClick: handleGuestBrandClick } : {})} />
 
 
 
