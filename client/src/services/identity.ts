@@ -1,5 +1,22 @@
 const NAME_KEY = 'skyjo.playerName';
+const GUEST_READY_KEY = 'skyjo.guestReady';
 const SESSION_KEY = 'skyjo.session';
+const SESSION_CHANGED = 'skyjo:session-changed';
+
+type SessionListener = () => void;
+const sessionListeners = new Set<SessionListener>();
+
+function notifySessionChanged(): void {
+  sessionListeners.forEach((listener) => listener());
+}
+
+/** Abonnement aux changements de session (save / clear). */
+export function subscribeSessionChange(listener: SessionListener): () => void {
+  sessionListeners.add(listener);
+  return () => {
+    sessionListeners.delete(listener);
+  };
+}
 
 /** Lit le pseudo enregistré localement. */
 export function loadPlayerName(): string {
@@ -19,6 +36,38 @@ export function savePlayerName(name: string): void {
   }
 }
 
+/** Indique si l'invité a validé son pseudo (écran dashboard). */
+export function loadGuestReady(): boolean {
+  try {
+    return localStorage.getItem(GUEST_READY_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+/** Persiste l'état invité validé. */
+export function saveGuestReady(ready: boolean): void {
+  try {
+    if (ready) {
+      localStorage.setItem(GUEST_READY_KEY, 'true');
+    } else {
+      localStorage.removeItem(GUEST_READY_KEY);
+    }
+  } catch {
+    // Stockage indisponible : on ignore silencieusement.
+  }
+}
+
+/** Réinitialise la session invité (pseudo + état dashboard). */
+export function clearGuestSession(): void {
+  saveGuestReady(false);
+  try {
+    localStorage.removeItem(NAME_KEY);
+  } catch {
+    // Stockage indisponible : on ignore silencieusement.
+  }
+}
+
 /** Données de session stockées localement pour permettre la reconnexion. */
 export interface StoredSession {
   sessionToken: string;
@@ -30,6 +79,7 @@ export interface StoredSession {
 export function saveSession(session: StoredSession): void {
   try {
     localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    notifySessionChanged();
   } catch {
     // Stockage indisponible : on ignore silencieusement.
   }
@@ -52,6 +102,7 @@ export function loadSession(): StoredSession | null {
 export function clearSession(): void {
   try {
     localStorage.removeItem(SESSION_KEY);
+    notifySessionChanged();
   } catch {
     // Stockage indisponible : on ignore silencieusement.
   }

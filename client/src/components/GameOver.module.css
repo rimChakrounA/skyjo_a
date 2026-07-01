@@ -1,32 +1,39 @@
 .container {
   max-width: 520px;
-  margin: 1rem auto;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-5);
   text-align: center;
+  animation: fadeUp 0.5s ease both;
 }
 
 .title {
   margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-xl), 4vw, var(--text-3xl));
+  font-weight: 700;
+  color: var(--color-text);
 }
 
 .winner {
   margin: 0;
-  font-size: 1.1rem;
-  color: var(--success);
+  font-size: var(--text-lg);
+  color: var(--color-text-muted);
+}
+
+.winner strong {
+  color: var(--color-primary);
 }
 
 .actions {
   display: flex;
-  gap: 0.75rem;
-  justify-content: center;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: var(--space-3);
 }
 
 .waiting {
   margin: 0;
-  color: var(--text-muted);
-  font-style: italic;
-  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
 }

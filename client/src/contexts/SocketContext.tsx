@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { clearSession, loadSession } from '@/services/identity';
+import { clearSession, loadSession, subscribeSessionChange } from '@/services/identity';
 import { getSocket, restoreSession, type AppSocket } from '@/services/socket';
 
 export interface ReconnectedRoom {
@@ -21,6 +21,8 @@ export interface SocketContextValue {
   socketId: string | null;
   /** Identifiant logique du joueur, stable entre reconnexions. */
   playerId: string | null;
+  /** Identifiant effectif pour les actions de jeu (session → playerId → socket). */
+  selfId: string | null;
   /** Vrai pendant la tentative de restauration de session. */
   reconnecting: boolean;
   /** Salle restaurée : consommer pour naviguer puis appeler clearReconnectedRoom. */
@@ -41,6 +43,15 @@ export function SocketProvider({ children }: { children: ReactNode }): JSX.Eleme
   const [playerId, setPlayerId] = useState<string | null>(
     () => loadSession()?.playerId ?? null,
   );
+
+  useEffect(() => {
+    return subscribeSessionChange(() => {
+      const session = loadSession();
+      setPlayerId(session?.playerId ?? socket.id ?? null);
+    });
+  }, [socket]);
+
+  const selfId = playerId ?? socketId;
 
   const clearReconnectedRoom = useCallback(() => setReconnectedRoom(null), []);
 
@@ -93,8 +104,8 @@ export function SocketProvider({ children }: { children: ReactNode }): JSX.Eleme
   }, [socket]);
 
   const value = useMemo<SocketContextValue>(
-    () => ({ socket, connected, socketId, playerId, reconnecting, reconnectedRoom, clearReconnectedRoom }),
-    [socket, connected, socketId, playerId, reconnecting, reconnectedRoom, clearReconnectedRoom],
+    () => ({ socket, connected, socketId, playerId, selfId, reconnecting, reconnectedRoom, clearReconnectedRoom }),
+    [socket, connected, socketId, playerId, selfId, reconnecting, reconnectedRoom, clearReconnectedRoom],
   );
 
   return <SocketContext.Provider value={value}>{children}</SocketContext.Provider>;

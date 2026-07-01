@@ -7,19 +7,36 @@ export interface BoardProps {
   player: PublicPlayer;
   isSelf: boolean;
   isCurrent: boolean;
+  compact?: boolean;
   canClick?: (index: number) => boolean;
   onCardClick?: (index: number) => void;
+}
+
+function cardAriaLabel(
+  cell: PublicPlayer['cells'][number],
+  clickable: boolean,
+): string | undefined {
+  if (!clickable || cell === null) {
+    return undefined;
+  }
+  if (!cell.faceUp) {
+    return 'Révéler cette carte';
+  }
+  return `Remplacer la carte ${cell.value}`;
 }
 
 export function Board({
   player,
   isSelf,
   isCurrent,
+  compact = false,
   canClick,
   onCardClick,
 }: BoardProps): JSX.Element {
   return (
-    <div className={`${styles.board} ${isCurrent ? styles.current : ''}`}>
+    <div
+      className={`${styles.board} ${compact ? styles.compact : ''} ${isCurrent ? styles.current : ''}`}
+    >
       <div className={styles.header}>
         <span className={styles.name}>
           {player.name}
@@ -36,6 +53,7 @@ export function Board({
               key={index}
               cell={cell}
               clickable={clickable}
+              ariaLabel={cardAriaLabel(cell, clickable)}
               onClick={clickable ? () => onCardClick?.(index) : undefined}
             />
           );

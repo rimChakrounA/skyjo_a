@@ -1,0 +1,39 @@
+.tagline {
+  margin: calc(var(--space-3) * -1) 0 0;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 8px rgba(30, 58, 95, 0.25);
+}
+
+.roomsSection {
+  margin-top: var(--space-2);
+}
+
+.lightFooter {
+  position: relative;
+  z-index: 2;
+  margin-top: auto;
+  padding: var(--space-4);
+}
+
+.woodFooter {
+  position: relative;
+  z-index: 2;
+  margin-top: auto;
+  padding: var(--space-5) var(--space-4);
+  background:
+    linear-gradient(180deg, rgba(90, 58, 28, 0.15) 0%, transparent 8px),
+    repeating-linear-gradient(
+      90deg,
+      #6b4423 0px,
+      #7a5030 3px,
+      #5c3818 6px,
+      #8b5a32 10px,
+      #6b4423 14px
+    );
+  box-shadow:
+    inset 0 4px 12px rgba(0, 0, 0, 0.25),
+    0 -4px 20px rgba(0, 0, 0, 0.15);
+}

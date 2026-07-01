@@ -1,0 +1,32 @@
+.panel {
+  background: var(--color-surface-elevated);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-card);
+}
+
+.glass {
+  background: var(--color-surface-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.elevated {
+  box-shadow: var(--shadow-lg);
+}
+
+.paddingSm {
+  padding: var(--space-4);
+}
+
+.paddingMd {
+  padding: var(--space-6);
+}
+
+.paddingLg {
+  padding: var(--space-8);
+}
+
+.glow {
+  box-shadow: var(--shadow-card), var(--shadow-glow-accent);
+}

@@ -1,0 +1,49 @@
+.logo {
+  text-align: center;
+  animation: fadeUp 0.6s ease both;
+}
+
+.logoClickable {
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  width: 100%;
+}
+
+.logoClickable:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.wordmark {
+  margin: 0;
+  line-height: 0;
+}
+
+.image {
+  display: block;
+  width: clamp(12.5rem, 52vw, 20rem);
+  height: auto;
+  margin: 0 auto;
+  filter: drop-shadow(0 4px 12px rgba(30, 58, 95, 0.2));
+}
+
+.ribbon {
+  display: inline-block;
+  margin-top: var(--space-2);
+  padding: 0.35rem 1.5rem;
+  background: linear-gradient(180deg, var(--color-primary-hover), var(--color-primary));
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-button);
+  transform: rotate(-1deg);
+}
+
+.ribbon span {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  letter-spacing: 0.25em;
+  color: white;
+}

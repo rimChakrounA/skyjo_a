@@ -1,25 +1,39 @@
 .table {
   width: 100%;
   border-collapse: collapse;
-  background: var(--surface);
-  border-radius: var(--radius);
+  font-size: var(--text-sm);
   overflow: hidden;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
 }
 
 .table th,
 .table td {
-  padding: 0.6rem 1rem;
+  padding: var(--space-3) var(--space-4);
   text-align: left;
-  border-bottom: 1px solid var(--border);
+}
+
+.table thead {
+  background: var(--color-primary-muted);
 }
 
 .table th {
-  background: var(--surface-2);
-  font-size: 0.85rem;
-  color: var(--text-muted);
+  font-weight: 600;
+  color: var(--color-text);
+  text-transform: uppercase;
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+}
+
+.table tbody tr {
+  border-top: 1px solid var(--color-border);
+}
+
+.table tbody tr:nth-child(even) {
+  background: var(--color-surface-hover);
 }
 
 .ender {
-  color: var(--text-muted);
-  font-size: 0.8rem;
+  color: var(--color-text-subtle);
+  font-size: var(--text-xs);
 }

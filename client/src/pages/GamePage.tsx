@@ -1,13 +1,17 @@
 import type { PublicGameState } from '@shared/types/game.js';
+import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Board } from '@/components/Board';
 import { DiscardPile } from '@/components/DiscardPile';
 import { GameOver } from '@/components/GameOver';
+import { SceneShell } from '@/components/home/SceneShell';
 import { Scoreboard } from '@/components/Scoreboard';
 import { useGame } from '@/hooks/useGame';
 import { useGameState } from '@/hooks/useGameState';
 import { useSocket } from '@/hooks/useSocket';
+import { Button } from '@/components/ui/Button';
+import { Panel } from '@/components/ui/Panel';
 import { MainLayout } from '@/layouts/MainLayout';
 import { clearSession } from '@/services/identity';
 import { leaveRoom, requestRematch } from '@/services/socket';
@@ -38,9 +42,17 @@ function instruction(state: PublicGameState, isMyTurn: boolean): string {
   }
 }
 
+function GameScene({ children, compact = false }: { children: ReactNode; compact?: boolean }): JSX.Element {
+  return (
+    <MainLayout variant="scene">
+      <SceneShell compact={compact}>{children}</SceneShell>
+    </MainLayout>
+  );
+}
+
 export function GamePage(): JSX.Element {
   const navigate = useNavigate();
-  const { socketId, playerId } = useSocket();
+  const { selfId } = useSocket();
   const { roomSummary, closedReason, rematchRoomCode, clearRematchRoomCode, reset } = useGameState();
   const game = useGame();
   const { gameState } = game;
@@ -68,23 +80,23 @@ export function GamePage(): JSX.Element {
 
   if (gameState === null) {
     return (
-      <MainLayout>
-        <div className={styles.center}>
-          <p>En attente de la partie…</p>
-          <button type="button" className="secondary" onClick={() => void backToLobby()}>
-            Retour à l’accueil
-          </button>
-        </div>
-      </MainLayout>
+      <GameScene compact>
+        <Panel className={styles.centerPanel} padding="md">
+          <h2 className={styles.pageTitle}>Partie en cours</h2>
+          <p className={styles.pageMeta}>En attente de la partie…</p>
+          <Button variant="secondary" onClick={() => void backToLobby()}>
+            Retour à l&apos;accueil
+          </Button>
+        </Panel>
+      </GameScene>
     );
   }
 
-  const myId = playerId ?? socketId;
-  const isHost = roomSummary?.hostId === myId;
+  const isHost = roomSummary?.hostId === selfId;
 
   if (gameState.phase === 'gameOver') {
     return (
-      <MainLayout>
+      <GameScene>
         <GameOver
           players={gameState.players}
           winnerId={gameState.winnerId}
@@ -92,35 +104,51 @@ export function GamePage(): JSX.Element {
           onRematch={() => void requestRematch()}
           onBackToLobby={() => void backToLobby()}
         />
-      </MainLayout>
+      </GameScene>
     );
   }
-  const self = gameState.players.find((player) => player.id === myId) ?? null;
-  const others = gameState.players.filter((player) => player.id !== myId);
+
+  const self = selfId !== null ? (gameState.players.find((player) => player.id === selfId) ?? null) : null;
+  const others = selfId !== null ? gameState.players.filter((player) => player.id !== selfId) : gameState.players;
 
   return (
-    <MainLayout>
-      <div className={styles.game}>
-        <div className={styles.status}>
-          <span className={styles.round}>Manche {gameState.round}</span>
-          <span className={styles.instruction}>{instruction(gameState, game.isMyTurn)}</span>
+    <GameScene compact>
+      <Panel className={styles.gamePanel} padding="sm">
+        <div className={styles.topBar}>
+          <div className={styles.statusLine}>
+            <span className={styles.round}>Manche {gameState.round}</span>
+            <span className={styles.dot} aria-hidden="true">
+              ·
+            </span>
+            <p className={styles.instruction}>{instruction(gameState, game.isMyTurn)}</p>
+          </div>
+          <Button variant="danger" size="sm" onClick={() => void backToLobby()}>
+            Quitter
+          </Button>
         </div>
 
         {game.error !== null && <p className={styles.error}>{game.error}</p>}
+
+        {self === null && (
+          <p className={styles.error}>
+            Impossible d&apos;identifier votre joueur. Quittez la partie et rejoignez la salle à nouveau.
+          </p>
+        )}
 
         {gameState.phase === 'roundOver' ? (
           <div className={styles.roundOver}>
             <Scoreboard players={gameState.players} roundEnderId={gameState.roundEnderId} />
             {isHost ? (
-              <button type="button" onClick={game.nextRound}>
+              <Button fullWidth onClick={game.nextRound}>
                 Manche suivante
-              </button>
+              </Button>
             ) : (
               <p className={styles.waiting}>En attente de la manche suivante…</p>
             )}
           </div>
         ) : (
           <DiscardPile
+            compact
             discardTop={gameState.discardTop}
             deckCount={gameState.deckCount}
             drawnCard={gameState.drawnCard}
@@ -136,27 +164,25 @@ export function GamePage(): JSX.Element {
         <div className={styles.boards}>
           {self !== null && (
             <Board
+              compact
               player={self}
               isSelf
-              isCurrent={gameState.currentPlayerId === self.id}
-              canClick={(index) => game.canClickCard(myId ?? self.id, index)}
-              onCardClick={(index) => game.onCardClick(myId ?? self.id, index)}
+              isCurrent={game.isPlayerActive(self.id)}
+              canClick={(index) => game.canClickCard(selfId ?? self.id, index)}
+              onCardClick={(index) => game.onCardClick(selfId ?? self.id, index)}
             />
           )}
           {others.map((player) => (
             <Board
               key={player.id}
+              compact
               player={player}
               isSelf={false}
-              isCurrent={gameState.currentPlayerId === player.id}
+              isCurrent={game.isPlayerActive(player.id)}
             />
           ))}
         </div>
-
-        <button type="button" className="secondary" onClick={() => void backToLobby()}>
-          Quitter la partie
-        </button>
-      </div>
-    </MainLayout>
+      </Panel>
+    </GameScene>
   );
 }

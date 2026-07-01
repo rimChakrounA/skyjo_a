@@ -14,11 +14,9 @@ describe('JoinForm', () => {
     render(
       <JoinForm
         {...defaultProps}
-        name=""
         code=""
         busy={false}
         error="Pseudo requis"
-        onNameChange={vi.fn()}
         onCodeChange={vi.fn()}
         onCreate={vi.fn()}
         onJoin={vi.fn()}
@@ -32,11 +30,9 @@ describe('JoinForm', () => {
     render(
       <JoinForm
         {...defaultProps}
-        name="Alice"
         code=""
         busy={false}
         error={null}
-        onNameChange={vi.fn()}
         onCodeChange={vi.fn()}
         onCreate={onCreate}
         onJoin={vi.fn()}
@@ -46,22 +42,20 @@ describe('JoinForm', () => {
     expect(onCreate).toHaveBeenCalledOnce();
   });
 
-  it('notifie la saisie du pseudo', () => {
-    const onNameChange = vi.fn();
+  it('notifie la saisie du code de salle', () => {
+    const onCodeChange = vi.fn();
     render(
       <JoinForm
         {...defaultProps}
-        name=""
         code=""
         busy={false}
         error={null}
-        onNameChange={onNameChange}
-        onCodeChange={vi.fn()}
+        onCodeChange={onCodeChange}
         onCreate={vi.fn()}
         onJoin={vi.fn()}
       />,
     );
-    fireEvent.change(screen.getByPlaceholderText('Votre nom'), { target: { value: 'Bob' } });
-    expect(onNameChange).toHaveBeenCalledWith('Bob');
+    fireEvent.change(screen.getByPlaceholderText('EX : ABCDE'), { target: { value: 'abcde' } });
+    expect(onCodeChange).toHaveBeenCalledWith('ABCDE');
   });
 });

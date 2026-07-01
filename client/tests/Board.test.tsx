@@ -2,6 +2,7 @@ import type { PublicPlayer } from '@shared/types/game.js';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { Board } from '@/components/Board';
+import styles from '@/components/Board.module.css';
 
 function makePlayer(): PublicPlayer {
   const cells = Array.from({ length: 12 }, (_, index) =>
@@ -28,8 +29,24 @@ describe('Board', () => {
         onCardClick={onCardClick}
       />,
     );
-    const card = screen.getByRole('button', { name: '5' });
+    const card = screen.getByRole('button', { name: 'Remplacer la carte 5' });
     fireEvent.click(card);
     expect(onCardClick).toHaveBeenCalledWith(0);
+  });
+
+  it('gère une colonne retirée sans planter', () => {
+    const player = makePlayer();
+    player.cells[0] = null;
+    player.cells[4] = null;
+    player.cells[8] = null;
+    render(<Board player={player} isSelf isCurrent canClick={() => false} />);
+    expect(screen.getByText('Alice')).toBeInTheDocument();
+  });
+
+  it('applique la bordure joueur actif en mode compact', () => {
+    const { container } = render(
+      <Board player={makePlayer()} isSelf isCurrent compact canClick={() => false} />,
+    );
+    expect(container.firstChild).toHaveClass(styles.current);
   });
 });

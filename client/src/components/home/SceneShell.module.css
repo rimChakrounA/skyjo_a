@@ -1,0 +1,77 @@
+.scene {
+  position: relative;
+  min-height: calc(100vh - 72px);
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+}
+
+.skyLayer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.skyImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+
+.skyOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(30, 58, 95, 0.08) 0%,
+    transparent 20%,
+    transparent 70%,
+    rgba(45, 122, 74, 0.1) 100%
+  );
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: 1040px;
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--space-2) var(--space-4) var(--space-10);
+}
+
+.sceneCompact {
+  min-height: auto;
+}
+
+.contentCompact {
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3) var(--space-3);
+  justify-content: flex-start;
+}
+
+@media (max-width: 768px) {
+  .skyLayer {
+    background: var(--scene-bg-fill);
+  }
+
+  .skyImage {
+    object-fit: contain;
+    object-position: center center;
+  }
+
+  .content {
+    gap: var(--space-5);
+    padding: var(--space-2) var(--space-3) var(--space-8);
+  }
+
+  .contentCompact {
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-2) var(--space-2);
+  }
+}

@@ -1,5 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/Button';
+import { Field } from '@/components/ui/Field';
+import { Input } from '@/components/ui/Input';
+import { Panel } from '@/components/ui/Panel';
 import { useAuth } from '@/hooks/useAuth';
 import { MainLayout } from '@/layouts/MainLayout';
 import styles from './AuthPage.module.css';
@@ -28,43 +32,41 @@ export function LoginPage(): JSX.Element {
 
   return (
     <MainLayout>
-      <form className={styles.form} onSubmit={(e) => void handleSubmit(e)}>
-        <h2 className={styles.title}>Connexion</h2>
+      <Panel className={styles.wrapper} padding="lg">
+        <form className={styles.form} onSubmit={(e) => void handleSubmit(e)}>
+          <h2 className={styles.title}>Connexion</h2>
 
-        <label className={styles.label}>
-          Pseudo
-          <input
-            className={styles.input}
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            autoComplete="username"
-            required
-          />
-        </label>
+          <Field label="Pseudo">
+            <Input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              autoComplete="username"
+              required
+            />
+          </Field>
 
-        <label className={styles.label}>
-          Mot de passe
-          <input
-            className={styles.input}
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-            required
-          />
-        </label>
+          <Field label="Mot de passe">
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              required
+            />
+          </Field>
 
-        {error !== null && <p className={styles.error}>{error}</p>}
+          {error !== null && <p className={styles.error}>{error}</p>}
 
-        <button type="submit" disabled={busy}>
-          {busy ? 'Connexion…' : 'Se connecter'}
-        </button>
+          <Button type="submit" fullWidth disabled={busy}>
+            {busy ? 'Connexion…' : 'Se connecter'}
+          </Button>
 
-        <p className={styles.switch}>
-          Pas encore de compte ? <Link to="/register">S'inscrire</Link>
-        </p>
-      </form>
+          <p className={styles.switch}>
+            Pas encore de compte ? <Link to="/register">S&apos;inscrire</Link>
+          </p>
+        </form>
+      </Panel>
     </MainLayout>
   );
 }

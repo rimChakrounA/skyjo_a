@@ -15,6 +15,7 @@ export interface UseGameResult {
   canTake: boolean;
   canDiscardDrawn: boolean;
   canClickCard: (targetPlayerId: string, index: number) => boolean;
+  isPlayerActive: (playerId: string) => boolean;
   onCardClick: (targetPlayerId: string, index: number) => void;
   draw: () => void;
   takeDiscard: () => void;
@@ -27,11 +28,11 @@ function countFaceUp(player: PublicPlayer): number {
 }
 
 export function useGame(): UseGameResult {
-  const { playerId } = useSocket();
+  const { selfId } = useSocket();
   const { gameState, error } = useGameState();
 
-  const self = gameState?.players.find((player) => player.id === playerId) ?? null;
-  const isMyTurn = gameState !== null && gameState.currentPlayerId === playerId;
+  const self = gameState?.players.find((player) => player.id === selfId) ?? null;
+  const isMyTurn = gameState !== null && selfId !== null && gameState.currentPlayerId === selfId;
 
   const inPlay = gameState?.phase === 'playing' || gameState?.phase === 'lastRound';
   const canDraw = Boolean(isMyTurn && inPlay && gameState?.turnPhase === 'chooseSource');
@@ -43,14 +44,33 @@ export function useGame(): UseGameResult {
   );
   const canDiscardDrawn = Boolean(isMyTurn && inPlay && gameState?.turnPhase === 'resolveDraw');
 
+  const isPlayerActive = useCallback(
+    (playerId: string): boolean => {
+      if (gameState === null) {
+        return false;
+      }
+      if (gameState.phase === 'initialReveal') {
+        const player = gameState.players.find((entry) => entry.id === playerId);
+        if (player === undefined) {
+          return false;
+        }
+        return countFaceUp(player) < INITIAL_REVEAL_COUNT;
+      }
+      if (gameState.phase === 'playing' || gameState.phase === 'lastRound') {
+        return gameState.currentPlayerId === playerId;
+      }
+      return false;
+    },
+    [gameState],
+  );
+
   const dispatch = useCallback((action: GameAction): void => {
     void sendAction(action);
   }, []);
 
   const canClickCard = useCallback(
     (targetPlayerId: string, index: number): boolean => {
-      // On ne peut interagir qu'avec ses propres cartes
-      if (gameState === null || self === null || targetPlayerId !== playerId) {
+      if (gameState === null || self === null || selfId === null || targetPlayerId !== selfId) {
         return false;
       }
       const cell = self.cells[index];
@@ -71,7 +91,7 @@ export function useGame(): UseGameResult {
       }
       return false;
     },
-    [gameState, self, playerId, isMyTurn],
+    [gameState, self, selfId, isMyTurn],
   );
 
   const onCardClick = useCallback(
@@ -112,12 +132,13 @@ export function useGame(): UseGameResult {
   return {
     gameState,
     error,
-    selfId: playerId,
+    selfId,
     isMyTurn,
     canDraw,
     canTake,
     canDiscardDrawn,
     canClickCard,
+    isPlayerActive,
     onCardClick,
     draw,
     takeDiscard,

@@ -1,0 +1,68 @@
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-6);
+  background: rgba(255, 255, 255, 0.88);
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-md);
+  animation: fadeUp 0.7s ease 0.2s both;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: var(--color-accent);
+}
+
+.icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.label {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.label strong {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-right: var(--space-1);
+}
+
+.divider {
+  width: 1px;
+  height: 28px;
+  background: var(--color-border-strong);
+}
+
+@media (max-width: 640px) {
+  .bar {
+    border-radius: var(--radius-xl);
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .divider {
+    width: 60%;
+    height: 1px;
+  }
+}

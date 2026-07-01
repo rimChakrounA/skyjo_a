@@ -1,41 +1,84 @@
 .board {
-  padding: 0.8rem;
-  background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
+  padding: var(--space-4);
+  background: var(--color-surface-elevated);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: var(--space-3);
+  transition:
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
 }
 
 .current {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-glow-accent);
+}
+
+.compact.current {
+  border-color: var(--color-accent);
+  border-width: 2px;
+  box-shadow: var(--shadow-glow-accent);
 }
 
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .name {
-  font-weight: 600;
+  font-weight: 700;
+  font-size: var(--text-base);
 }
 
 .you {
-  color: var(--text-muted);
-  font-weight: 400;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  font-size: var(--text-sm);
 }
 
 .score {
-  font-size: 0.85rem;
-  color: var(--text-muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-primary-muted);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
 }
 
 .grid {
   display: grid;
-  gap: 6px;
+  gap: var(--game-card-gap, 8px);
   justify-content: center;
+}
+
+.compact {
+  padding: var(--space-3);
+  gap: var(--space-2);
+  border-radius: var(--radius-lg);
+  border-width: 1px;
+  box-shadow: var(--shadow-sm);
+}
+
+.compact .header {
+  padding-bottom: var(--space-1);
+}
+
+.compact .name {
+  font-size: var(--text-sm);
+}
+
+.compact .you {
+  font-size: var(--text-xs);
+}
+
+.compact .score {
+  font-size: var(--text-xs);
+  padding: 2px var(--space-2);
 }

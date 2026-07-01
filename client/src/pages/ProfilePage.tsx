@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { MainLayout } from '@/layouts/MainLayout';
+import { Panel } from '@/components/ui/Panel';
 import { loadToken } from '@/services/authService';
 import styles from './ProfilePage.module.css';
 
@@ -63,10 +64,11 @@ export function ProfilePage(): JSX.Element {
   return (
     <MainLayout>
       <div className={styles.profile}>
-        <h2 className={styles.title}>Profil de {user.username}</h2>
+        <Panel padding="lg">
+          <h2 className={styles.title}>Profil de {user.username}</h2>
 
-        {stats !== null && (
-          <section className={styles.statsGrid}>
+          {stats !== null && (
+            <section className={styles.statsGrid}>
             <div className={styles.statCard}>
               <span className={styles.statValue}>{stats.played}</span>
               <span className={styles.statLabel}>Parties jouées</span>
@@ -94,7 +96,7 @@ export function ProfilePage(): JSX.Element {
           </section>
         )}
 
-        <section>
+        <section className={styles.section}>
           <h3 className={styles.subtitle}>Historique des parties</h3>
           {loading ? (
             <p className={styles.empty}>Chargement…</p>
@@ -129,6 +131,7 @@ export function ProfilePage(): JSX.Element {
             </ul>
           )}
         </section>
+        </Panel>
       </div>
     </MainLayout>
   );

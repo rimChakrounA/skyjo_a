@@ -1,0 +1,98 @@
+.decor {
+  position: fixed;
+  right: max(2vw, 12px);
+  bottom: 12vh;
+  width: 160px;
+  height: 200px;
+  pointer-events: none;
+  z-index: 1;
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .decor {
+    display: block;
+  }
+}
+
+.card {
+  position: absolute;
+  width: 56px;
+  height: 76px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--card-text);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--shadow-md);
+  animation: float 4s ease-in-out infinite;
+}
+
+.cardNeg {
+  top: 0;
+  right: 20px;
+  background: linear-gradient(145deg, var(--card-negative-from), var(--card-negative-to));
+  --float-rotate: -12deg;
+  transform: rotate(-12deg);
+  animation-delay: 0s;
+}
+
+.card12 {
+  top: 24px;
+  right: 48px;
+  background: linear-gradient(145deg, var(--card-high-from), var(--card-high-to));
+  --float-rotate: 4deg;
+  transform: rotate(4deg);
+  animation-delay: 0.5s;
+}
+
+.card7 {
+  top: 48px;
+  right: 8px;
+  background: linear-gradient(145deg, var(--card-mid-from), var(--card-mid-to));
+  --float-rotate: 18deg;
+  transform: rotate(18deg);
+  animation-delay: 1s;
+}
+
+.cardBack {
+  top: 70px;
+  right: 36px;
+  background: linear-gradient(145deg, var(--card-hidden-from), var(--card-hidden-to));
+  --float-rotate: -6deg;
+  transform: rotate(-6deg);
+  animation-delay: 1.5s;
+}
+
+.stack {
+  position: absolute;
+  bottom: 0;
+  right: 24px;
+  width: 64px;
+  height: 88px;
+}
+
+.stackLayer {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #fff, #e8eef5);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  box-shadow: var(--shadow-sm);
+}
+
+.stackLayer:nth-child(1) {
+  transform: translateY(0);
+}
+
+.stackLayer:nth-child(2) {
+  transform: translateY(-4px) translateX(-2px);
+}
+
+.stackLayer:nth-child(3) {
+  transform: translateY(-8px) translateX(-4px);
+}

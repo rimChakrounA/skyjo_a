@@ -1,4 +1,6 @@
 import type { PublicPlayer } from '@shared/types/game.js';
+import { Button } from '@/components/ui/Button';
+import { Panel } from '@/components/ui/Panel';
 import { Scoreboard } from './Scoreboard';
 import styles from './GameOver.module.css';
 
@@ -20,7 +22,7 @@ export function GameOver({
   const winner = players.find((player) => player.id === winnerId) ?? null;
 
   return (
-    <div className={styles.container}>
+    <Panel className={styles.container} glow padding="lg">
       <h2 className={styles.title}>Partie terminée</h2>
       {winner !== null && (
         <p className={styles.winner}>
@@ -30,17 +32,17 @@ export function GameOver({
       <Scoreboard players={players} roundEnderId={null} />
       <div className={styles.actions}>
         {isHost && (
-          <button type="button" onClick={onRematch}>
+          <Button fullWidth onClick={onRematch}>
             Rejouer
-          </button>
+          </Button>
         )}
-        <button type="button" className="secondary" onClick={onBackToLobby}>
-          Retour à l'accueil
-        </button>
+        <Button variant="secondary" fullWidth onClick={onBackToLobby}>
+          Retour à l&apos;accueil
+        </Button>
       </div>
       {!isHost && (
-        <p className={styles.waiting}>En attente de la décision de l'hôte…</p>
+        <p className={styles.waiting}>En attente de la décision de l&apos;hôte…</p>
       )}
-    </div>
+    </Panel>
   );
 }

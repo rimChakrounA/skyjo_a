@@ -1,0 +1,24 @@
+.banner {
+  text-align: center;
+  animation: fadeUp 0.5s ease both;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-xl), 4vw, var(--text-2xl));
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 2px 12px rgba(30, 58, 95, 0.3);
+}
+
+.wave {
+  display: inline-block;
+}
+
+.subtitle {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-base);
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 8px rgba(30, 58, 95, 0.2);
+}

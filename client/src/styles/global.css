@@ -1,19 +1,8 @@
-:root {
-  --bg: #0f172a;
-  --surface: #1e293b;
-  --surface-2: #334155;
-  --border: #475569;
-  --text: #e2e8f0;
-  --text-muted: #94a3b8;
-  --primary: #6366f1;
-  --primary-hover: #818cf8;
-  --danger: #ef4444;
-  --success: #22c55e;
-  --radius: 10px;
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-}
+@import './tokens.css';
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -25,50 +14,137 @@ body,
 }
 
 body {
-  background: radial-gradient(circle at top, #1e293b, var(--bg));
-  color: var(--text);
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  line-height: 1.5;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  background: linear-gradient(
+    180deg,
+    var(--color-sky-top) 0%,
+    var(--color-sky-mid) 35%,
+    var(--color-sky-horizon) 72%,
+    var(--color-sky-glow) 100%
+  );
+  background-attachment: fixed;
 }
 
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-accent-hover);
+}
+
+/* Legacy buttons — préférer <Button /> */
 button {
   cursor: pointer;
   font: inherit;
+  font-weight: 700;
+  font-family: var(--font-display);
   border: none;
-  border-radius: var(--radius);
-  padding: 0.6rem 1.1rem;
-  background: var(--primary);
+  border-radius: var(--radius-full);
+  padding: 0.7rem 1.4rem;
+  background: linear-gradient(180deg, var(--color-primary-hover), var(--color-primary));
   color: white;
-  transition: background 0.15s ease;
+  box-shadow: var(--shadow-button), var(--shadow-glow-primary);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    filter var(--transition-fast);
 }
 
 button:hover:not(:disabled) {
-  background: var(--primary-hover);
+  filter: brightness(1.05);
+  transform: translateY(-2px);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12);
 }
 
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 button.secondary {
-  background: var(--surface-2);
+  background: var(--color-surface-elevated);
+  color: var(--color-text);
+  border: 2px solid var(--color-border-strong);
+  box-shadow: var(--shadow-sm);
 }
 
-input {
+input,
+select,
+textarea {
   font: inherit;
-  padding: 0.6rem 0.8rem;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text);
+  font-family: var(--font-sans);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-border-strong);
+  background: var(--color-surface-elevated);
+  color: var(--color-text);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
-input:focus {
-  outline: 2px solid var(--primary);
-  outline-offset: 1px;
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 4px var(--color-accent-muted);
 }
 
-a {
-  color: var(--primary-hover);
+input::placeholder {
+  color: var(--color-text-subtle);
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--float-rotate, 0deg));
+  }
+  50% {
+    transform: translateY(-10px) rotate(var(--float-rotate, 0deg));
+  }
+}
+
+@keyframes sunPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

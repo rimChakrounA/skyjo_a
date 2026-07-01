@@ -1,4 +1,5 @@
 import type { RoomPlayer } from '@shared/types/room.js';
+import { Badge } from '@/components/ui/Badge';
 import styles from './PlayerList.module.css';
 
 export interface PlayerListProps {
@@ -16,8 +17,8 @@ export function PlayerList({ players, currentSocketId }: PlayerListProps): JSX.E
             {player.id === currentSocketId && <span className={styles.you}> (vous)</span>}
           </span>
           <span className={styles.tags}>
-            {player.isHost && <span className={styles.host}>Hôte</span>}
-            {!player.connected && <span className={styles.offline}>Déconnecté</span>}
+            {player.isHost && <Badge variant="primary">Hôte</Badge>}
+            {!player.connected && <Badge variant="danger">Déconnecté</Badge>}
           </span>
         </li>
       ))}

@@ -1,0 +1,62 @@
+---
+description: Charte UI Skyjo Online — tokens, composants, assets, cartes, responsive et accessibilité
+globs: client/src/**/*.{tsx,css}
+alwaysApply: false
+---
+
+# UI Skyjo Online
+
+Référence complète : `.cursor/skills/design-system/SKILL.md`.
+
+## Stack
+
+- **CSS Modules** uniquement — pas de Tailwind, pas de lib UI externe.
+- Tokens dans `client/src/styles/tokens.css` — jamais de couleurs hex en dur ailleurs.
+- Polices : **Fredoka** (titres, boutons), **Nunito** (texte).
+
+## Assets statiques
+
+Tous les visuels raster/SVG vont dans `client/public/assets/` :
+
+```
+client/public/assets/
+├── background/      # ciel, collines, table, paysages
+├── characters/      # illustrations joueurs, avatars
+├── cards/           # faces Skyjo, dos, fan décoratif
+├── icons/           # icônes UI (nav, stats, boutons)
+└── decorations/     # soleil, deck 3D, éléments décoratifs
+```
+
+- Référencer via chemin absolu Vite : `/assets/icons/users.svg`
+- Nommage : `kebab-case` (`deck-stack.webp`, `players-table.svg`)
+- Formats : **SVG** pour icônes/illustrations vectorielles ; **WebP** (ou PNG) pour photos/textures
+- Ne pas importer depuis `src/assets/` sauf petits assets bundlés par composant
+- Préférer `<img>` ou `background-image` CSS ; `alt=""` si décoratif (`aria-hidden`)
+
+## Composants obligatoires
+
+Importer depuis `@/components/ui` : `Button`, `Panel`, `Badge`, `Field`, `Input`, `Select`.
+
+Exception : `CardView` utilise un `<button>` natif pour les cartes cliquables.
+
+## Identité visuelle
+
+- Ambiance **lumineuse, playful, outdoor** (ciel, collines, cartes blanches).
+- Accueil : `MainLayout variant="scene"` + composants `client/src/components/home/`.
+- Cartes jeu : tokens `--card-*` via `CardView` — ne pas dupliquer la logique couleur.
+
+## Règles
+
+- Espacements : `--space-*` · layout local en `.module.css`
+- Responsive : stack ≤ 768px · cartes lisibles dès 320px
+- Textes UI en **français** · `:focus-visible` + ARIA sur le décor
+
+## Anti-patterns
+
+```tsx
+// ❌ Asset en dur hors structure, emoji comme icône UI
+<img src="/img/icon.png" />
+
+// ✅ Chemin conventionné
+<img src="/assets/icons/users.svg" alt="" aria-hidden="true" />
+```
