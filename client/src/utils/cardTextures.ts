@@ -50,7 +50,7 @@ export function cardTextureStyle(cell: PublicBoardCell): CSSProperties | undefin
   }
   return {
     backgroundImage: `url(${url})`,
-    backgroundSize: 'cover',
+    backgroundSize: '100% 100%',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
   };

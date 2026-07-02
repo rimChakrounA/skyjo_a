@@ -60,6 +60,7 @@ export function RoomPage(): JSX.Element {
 
   const initialRoom = (location.state as RoomLocationState | null)?.room ?? null;
   const [room, setRoom] = useState<RoomSummary | null>(initialRoom);
+  const [joining, setJoining] = useState(initialRoom === null);
   const [error, setError] = useState<string | null>(null);
   const joinAttempted = useRef(false);
 
@@ -80,7 +81,9 @@ export function RoomPage(): JSX.Element {
       navigate('/');
       return;
     }
+    setJoining(true);
     void joinRoom(code, name.trim()).then((response) => {
+      setJoining(false);
       if (response.ok) {
         setRoom(response.data.room);
       } else {
@@ -122,8 +125,26 @@ export function RoomPage(): JSX.Element {
         <SceneShell>
           <Panel className={styles.roomCard} padding="lg">
             <div className={styles.roomHeader}>
-              <h2 className={styles.roomTitle}>Connexion à la salle…</h2>
-              <p className={styles.roomMeta}>Veuillez patienter un instant</p>
+              {joining ? (
+                <>
+                  <h2 className={styles.roomTitle}>Connexion à la salle…</h2>
+                  <p className={styles.roomMeta}>
+                    Code : <strong className={styles.roomCode}>{code.toUpperCase()}</strong>
+                    {' · '}
+                    Veuillez patienter un instant
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h2 className={styles.roomTitle}>Impossible de rejoindre</h2>
+                  {error !== null && <p className={styles.error}>{error}</p>}
+                  <div className={styles.actions}>
+                    <Button fullWidth size="lg" onClick={() => navigate('/')}>
+                      Retour à l&apos;accueil
+                    </Button>
+                  </div>
+                </>
+              )}
             </div>
           </Panel>
         </SceneShell>

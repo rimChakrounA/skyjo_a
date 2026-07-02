@@ -1,10 +1,11 @@
-import type { PublicGameState } from '@shared/types/game.js';
 import type { ReactNode } from 'react';
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Board } from '@/components/Board';
 import { DiscardPile } from '@/components/DiscardPile';
 import { GameOver } from '@/components/GameOver';
+import { GameHeader } from '@/components/game/GameHeader';
+import { GameRulesBanner } from '@/components/game/GameRulesBanner';
 import { SceneShell } from '@/components/home/SceneShell';
 import { Scoreboard } from '@/components/Scoreboard';
 import { useGame } from '@/hooks/useGame';
@@ -15,47 +16,39 @@ import { Panel } from '@/components/ui/Panel';
 import { MainLayout } from '@/layouts/MainLayout';
 import { clearSession } from '@/services/identity';
 import { leaveRoom, requestRematch } from '@/services/socket';
+import { assignPlayerAvatars } from '@/utils/playerAvatar';
 import styles from './GamePage.module.css';
 
-function instruction(state: PublicGameState, isMyTurn: boolean): string {
-  if (state.phase === 'initialReveal') {
-    return 'Révélez deux de vos cartes pour commencer.';
-  }
-  if (state.phase === 'roundOver') {
-    return 'Manche terminée.';
-  }
-  if (!isMyTurn) {
-    const current = state.players.find((player) => player.id === state.currentPlayerId);
-    return `Au tour de ${current?.name ?? '...'}.`;
-  }
-  switch (state.turnPhase) {
-    case 'chooseSource':
-      return 'À vous : piochez ou prenez la défausse.';
-    case 'resolveDraw':
-      return 'Remplacez une carte ou défaussez la carte piochée.';
-    case 'resolveTake':
-      return 'Choisissez la carte à remplacer.';
-    case 'flip':
-      return 'Révélez une carte cachée.';
-    default:
-      return '';
-  }
-}
-
-function GameScene({ children, compact = false }: { children: ReactNode; compact?: boolean }): JSX.Element {
+function GameScene({
+  children,
+  compact = false,
+  footer,
+}: {
+  children: ReactNode;
+  compact?: boolean;
+  footer?: ReactNode;
+}): JSX.Element {
   return (
     <MainLayout variant="scene">
-      <SceneShell compact={compact}>{children}</SceneShell>
+      <SceneShell compact={compact} footer={footer}>
+        {children}
+      </SceneShell>
     </MainLayout>
   );
 }
 
 export function GamePage(): JSX.Element {
+  const { code = '' } = useParams();
   const navigate = useNavigate();
   const { selfId } = useSocket();
   const { roomSummary, closedReason, rematchRoomCode, clearRematchRoomCode, reset } = useGameState();
   const game = useGame();
   const { gameState } = game;
+  const playerAvatarKey = gameState?.players.map((player) => player.id).sort().join('|') ?? '';
+  const playerAvatars = useMemo(
+    () => assignPlayerAvatars(gameState?.players.map((player) => player.id) ?? []),
+    [playerAvatarKey],
+  );
 
   useEffect(() => {
     if (closedReason !== null) {
@@ -78,9 +71,20 @@ export function GamePage(): JSX.Element {
     navigate('/');
   };
 
+  const gameFooter = (
+    <footer className={styles.gameFooter}>
+      <Button variant="navy" size="sm" onClick={() => navigate(`/room/${code}`)}>
+        Salon · {roomSummary?.players.length ?? '—'} joueurs
+      </Button>
+      <Button variant="ghost" size="sm" disabled title="Bientôt disponible">
+        Chat
+      </Button>
+    </footer>
+  );
+
   if (gameState === null) {
     return (
-      <GameScene compact>
+      <GameScene compact footer={gameFooter}>
         <Panel className={styles.centerPanel} padding="md">
           <h2 className={styles.pageTitle}>Partie en cours</h2>
           <p className={styles.pageMeta}>En attente de la partie…</p>
@@ -96,7 +100,7 @@ export function GamePage(): JSX.Element {
 
   if (gameState.phase === 'gameOver') {
     return (
-      <GameScene>
+      <GameScene footer={gameFooter}>
         <GameOver
           players={gameState.players}
           winnerId={gameState.winnerId}
@@ -110,22 +114,23 @@ export function GamePage(): JSX.Element {
 
   const self = selfId !== null ? (gameState.players.find((player) => player.id === selfId) ?? null) : null;
   const others = selfId !== null ? gameState.players.filter((player) => player.id !== selfId) : gameState.players;
+  const currentPlayer = gameState.players.find((player) => player.id === gameState.currentPlayerId) ?? null;
+  const maxTotalScore = Math.max(0, ...gameState.players.map((player) => player.totalScore));
+  const showTurnBanner =
+    gameState.phase !== 'roundOver' &&
+    currentPlayer !== null &&
+    (gameState.phase === 'playing' || gameState.phase === 'initialReveal' || gameState.phase === 'lastRound');
 
   return (
-    <GameScene compact>
-      <Panel className={styles.gamePanel} padding="sm">
-        <div className={styles.topBar}>
-          <div className={styles.statusLine}>
-            <span className={styles.round}>Manche {gameState.round}</span>
-            <span className={styles.dot} aria-hidden="true">
-              ·
-            </span>
-            <p className={styles.instruction}>{instruction(gameState, game.isMyTurn)}</p>
-          </div>
-          <Button variant="danger" size="sm" onClick={() => void backToLobby()}>
-            Quitter
-          </Button>
-        </div>
+    <GameScene compact footer={gameFooter}>
+      <Panel className={styles.gamePanel} padding="md">
+        <GameHeader
+          round={gameState.round}
+          currentPlayerName={currentPlayer?.name ?? null}
+          showTurnBanner={showTurnBanner}
+          maxTotalScore={maxTotalScore}
+          onQuit={() => void backToLobby()}
+        />
 
         {game.error !== null && <p className={styles.error}>{game.error}</p>}
 
@@ -166,6 +171,7 @@ export function GamePage(): JSX.Element {
             <Board
               compact
               player={self}
+              avatar={playerAvatars.get(self.id)!}
               isSelf
               isCurrent={game.isPlayerActive(self.id)}
               canClick={(index) => game.canClickCard(selfId ?? self.id, index)}
@@ -177,11 +183,14 @@ export function GamePage(): JSX.Element {
               key={player.id}
               compact
               player={player}
+              avatar={playerAvatars.get(player.id)!}
               isSelf={false}
               isCurrent={game.isPlayerActive(player.id)}
             />
           ))}
         </div>
+
+        <GameRulesBanner />
       </Panel>
     </GameScene>
   );

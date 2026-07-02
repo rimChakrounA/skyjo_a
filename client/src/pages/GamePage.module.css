@@ -1,76 +1,12 @@
 .gamePanel {
-  --game-card-w: 52px;
-  --game-card-h: 72px;
-  --game-card-fs: 1.45rem;
-  --game-card-gap: 6px;
-
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  max-width: 920px;
+  gap: var(--space-4);
+  max-width: 1060px;
   width: 100%;
   margin: 0 auto;
-  padding: var(--space-4);
   animation: fadeUp 0.5s ease both;
-}
-
-@media (min-width: 480px) {
-  .gamePanel {
-    --game-card-w: 60px;
-    --game-card-h: 82px;
-    --game-card-fs: 1.6rem;
-    --game-card-gap: 7px;
-  }
-}
-
-.topBar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-
-.statusLine {
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  min-width: 0;
-  flex: 1;
-}
-
-.round {
-  font-family: var(--font-display);
-  font-size: var(--text-sm);
-  font-weight: 700;
-  color: var(--color-primary);
-  white-space: nowrap;
-}
-
-.dot {
-  color: var(--color-text-subtle);
-  font-weight: 700;
-}
-
-.instruction {
-  margin: 0;
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-  line-height: 1.35;
-}
-
-.pageTitle {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: var(--text-xl);
-  font-weight: 700;
-  color: var(--color-text);
-}
-
-.pageMeta {
-  margin: var(--space-2) 0 var(--space-4);
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
+  box-shadow: var(--shadow-lg);
 }
 
 .error {
@@ -92,7 +28,7 @@
 .boards {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
 
 .centerPanel {
@@ -107,6 +43,20 @@
   animation: fadeUp 0.5s ease both;
 }
 
+.pageTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.pageMeta {
+  margin: var(--space-2) 0 var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
 .waiting {
   margin: 0;
   text-align: center;
@@ -114,12 +64,19 @@
   font-size: var(--text-sm);
 }
 
-@media (max-width: 520px) {
+.gameFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 1060px;
+  margin: var(--space-3) auto 0;
+  padding: 0 var(--space-2);
+}
+
+@media (max-width: 720px) {
   .boards {
     grid-template-columns: 1fr;
-  }
-
-  .topBar {
-    align-items: flex-start;
   }
 }

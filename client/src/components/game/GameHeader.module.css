@@ -1,0 +1,111 @@
+.header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.roundBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+  flex: 1;
+}
+
+.roundLabel {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.progressTrack {
+  display: flex;
+  gap: 2px;
+  width: 40%;
+  max-width: 140px;
+}
+
+.progressSegment {
+  flex: 1;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-border);
+}
+
+.progressFilled {
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-hover));
+}
+
+.progressHint {
+  font-size: 0.65rem;
+  color: var(--color-text-subtle);
+}
+
+.turnBanner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-hover));
+  color: white;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  box-shadow: var(--shadow-glow-primary);
+  text-align: center;
+  white-space: nowrap;
+  max-width: min(calc(100% - 2 * var(--space-8)), 360px);
+  z-index: 1;
+}
+
+.turnBanner strong {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.sparkle {
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  flex: 1;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-top: calc(var(--space-6) + var(--space-1));
+  }
+
+  .turnBanner {
+    top: 0;
+    transform: translateX(-50%);
+    max-width: calc(100% - var(--space-4));
+    white-space: normal;
+  }
+
+  .roundBlock {
+    flex: 1 1 100%;
+  }
+
+  .actions {
+    flex: 1 1 auto;
+  }
+}

@@ -26,6 +26,8 @@ import { useAuth } from '@/hooks/useAuth';
 
 import { usePlayerIdentity } from '@/hooks/usePlayerIdentity';
 
+import { useSocket } from '@/hooks/useSocket';
+
 import { useUserStats } from '@/hooks/useUserStats';
 
 import { MainLayout } from '@/layouts/MainLayout';
@@ -34,7 +36,7 @@ import { saveGuestReady } from '@/services/identity';
 
 import { fetchPublicRooms } from '@/services/roomsService';
 
-import { createRoom, joinRoom } from '@/services/socket';
+import { createRoom, ensureSocketConnected } from '@/services/socket';
 
 import type { RoomLocationState } from '@/types/navigation';
 
@@ -65,6 +67,8 @@ export function HomePage(): JSX.Element {
   const [maxPlayers, setMaxPlayers] = useState(MAX_PLAYERS);
 
   const [busy, setBusy] = useState(false);
+  const [pendingAction, setPendingAction] = useState<'create' | 'join' | null>(null);
+  const { connected } = useSocket();
 
   const [error, setError] = useState<string | null>(null);
 
@@ -155,13 +159,33 @@ export function HomePage(): JSX.Element {
 
   useEffect(() => {
 
-    if (inviteCode !== undefined && inviteCode.length > 0 && displayName.length > 0) {
+    if (inviteCode === undefined || inviteCode.length === 0 || !isDashboard) {
 
-      setCode(inviteCode);
+      return;
 
     }
 
-  }, [inviteCode, displayName]);
+    navigate(`/room/${inviteCode.toUpperCase()}`, { replace: true });
+
+  }, [inviteCode, isDashboard, navigate]);
+
+
+
+  useEffect(() => {
+
+    if (!isDashboard || connected) {
+
+      return;
+
+    }
+
+    void ensureSocketConnected().catch(() => {
+
+      // L'erreur sera affichée au clic sur créer / rejoindre.
+
+    });
+
+  }, [isDashboard, connected]);
 
 
 
@@ -205,11 +229,11 @@ export function HomePage(): JSX.Element {
 
     setBusy(true);
 
+    setPendingAction('create');
+
     setError(null);
 
     const response = await createRoom(displayName, { minPlayers, maxPlayers });
-
-    setBusy(false);
 
     if (response.ok) {
 
@@ -223,15 +247,21 @@ export function HomePage(): JSX.Element {
 
     }
 
+    setBusy(false);
+
+    setPendingAction(null);
+
   };
 
 
 
-  const handleJoin = async (joinCode: string = code): Promise<void> => {
+  const handleJoin = (joinCode: string = code): void => {
 
     if (!ensureName()) return;
 
-    if (joinCode.trim().length === 0) {
+    const normalizedCode = joinCode.trim().toUpperCase();
+
+    if (normalizedCode.length === 0) {
 
       setError('Veuillez saisir un code de salle.');
 
@@ -239,25 +269,9 @@ export function HomePage(): JSX.Element {
 
     }
 
-    setBusy(true);
-
     setError(null);
 
-    const response = await joinRoom(joinCode.trim(), displayName);
-
-    setBusy(false);
-
-    if (response.ok) {
-
-      const state: RoomLocationState = { room: response.data.room };
-
-      navigate(`/room/${response.data.room.code}`, { state });
-
-    } else {
-
-      setError(response.error);
-
-    }
+    navigate(`/room/${normalizedCode}`);
 
   };
 
@@ -377,6 +391,8 @@ export function HomePage(): JSX.Element {
 
                 busy={busy}
 
+                pendingAction={pendingAction}
+
                 error={error}
 
                 onCodeChange={setCode}
@@ -387,7 +403,7 @@ export function HomePage(): JSX.Element {
 
                 onCreate={() => void handleCreate()}
 
-                onJoin={() => void handleJoin()}
+                onJoin={() => handleJoin()}
 
               />
 
@@ -405,9 +421,7 @@ export function HomePage(): JSX.Element {
 
                   onJoin={(roomCode) => {
 
-                    setCode(roomCode);
-
-                    void handleJoin(roomCode);
+                    handleJoin(roomCode);
 
                   }}
 

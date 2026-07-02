@@ -36,14 +36,38 @@ export function CardView({ cell, clickable = false, onClick, ariaLabel }: CardVi
         onClick={onClick}
         aria-label={label}
       >
-        {isFaceUp ? <span className={styles.value}>{cell.value}</span> : ''}
+        {isFaceUp ? (
+          <>
+            <span className={styles.cornerTL} aria-hidden="true">
+              {cell.value}
+            </span>
+            <span className={styles.value}>{cell.value}</span>
+            <span className={styles.cornerBR} aria-hidden="true">
+              {cell.value}
+            </span>
+          </>
+        ) : (
+          ''
+        )}
       </button>
     );
   }
 
   return (
     <div className={className} style={textureStyle}>
-      {isFaceUp ? <span className={styles.value}>{cell.value}</span> : ''}
+      {isFaceUp ? (
+        <>
+          <span className={styles.cornerTL} aria-hidden="true">
+            {cell.value}
+          </span>
+          <span className={styles.value}>{cell.value}</span>
+          <span className={styles.cornerBR} aria-hidden="true">
+            {cell.value}
+          </span>
+        </>
+      ) : (
+        ''
+      )}
     </div>
   );
 }

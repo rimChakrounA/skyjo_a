@@ -1,20 +1,24 @@
 .card {
-  width: var(--game-card-w, 52px);
-  height: var(--game-card-h, 72px);
+  box-sizing: border-box;
+  flex-shrink: 0;
+  width: var(--game-card-w, 54px);
+  height: var(--game-card-h, 74px);
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: var(--game-card-fs, 1.25rem);
+  font-size: var(--game-card-fs, 1.35rem);
   font-family: var(--font-display);
   line-height: 1;
   color: #ffffff;
-  border: 2px solid rgba(255, 255, 255, 0.35);
-  box-shadow: var(--shadow-sm);
+  border: 3px solid rgba(255, 255, 255, 0.92);
+  box-shadow: 0 4px 14px rgba(30, 58, 95, 0.18);
   user-select: none;
   position: relative;
   overflow: hidden;
+  background-origin: border-box;
+  background-clip: padding-box;
 }
 
 /* Neutralise les styles globaux `button` de global.css */
@@ -48,9 +52,9 @@ button.card:active:not(:disabled) {
 
 @media (min-width: 640px) {
   .card {
-    width: var(--game-card-w, 58px);
-    height: var(--game-card-h, 80px);
-    font-size: var(--game-card-fs, 1.35rem);
+    width: var(--game-card-w, 62px);
+    height: var(--game-card-h, 86px);
+    font-size: var(--game-card-fs, 1.5rem);
   }
 }
 
@@ -70,11 +74,33 @@ button.card:active:not(:disabled) {
   color: #ffffff;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 1em;
+  font-size: 1.35em;
   line-height: 1;
   text-shadow:
     0 1px 2px rgba(30, 58, 95, 0.55),
     0 0 8px rgba(30, 58, 95, 0.25);
+}
+
+.cornerTL,
+.cornerBR {
+  position: absolute;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.42em;
+  line-height: 1;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(30, 58, 95, 0.45);
+  pointer-events: none;
+}
+
+.cornerTL {
+  top: 5px;
+  left: 6px;
+}
+
+.cornerBR {
+  bottom: 5px;
+  right: 6px;
 }
 
 .empty {

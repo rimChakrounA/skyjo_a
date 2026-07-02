@@ -1,8 +1,13 @@
 .board {
+  --game-card-w: 66px;
+  --game-card-h: 91px;
+  --game-card-fs: 1.5rem;
+  --game-card-gap: 7px;
+
   padding: var(--space-4);
   background: var(--color-surface-elevated);
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  border-radius: var(--radius-2xl);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-xl);
   box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
@@ -12,73 +17,224 @@
     box-shadow var(--transition-base);
 }
 
-.current {
-  border-color: var(--color-accent);
-  box-shadow: var(--shadow-glow-accent);
+.self {
+  border-color: rgba(74, 144, 226, 0.55);
+  background: linear-gradient(180deg, rgba(74, 144, 226, 0.06) 0%, var(--color-surface-elevated) 40%);
 }
 
-.compact.current {
-  border-color: var(--color-accent);
-  border-width: 2px;
-  box-shadow: var(--shadow-glow-accent);
+.activeOpponent {
+  border-color: rgba(231, 76, 60, 0.55);
+  background: linear-gradient(180deg, rgba(231, 76, 60, 0.06) 0%, var(--color-surface-elevated) 40%);
+}
+
+.opponent {
+  border-color: var(--color-border);
+}
+
+.current {
+  box-shadow: var(--shadow-card), 0 0 0 1px rgba(39, 174, 96, 0.15);
 }
 
 .header {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
-  gap: var(--space-4);
-  padding-bottom: var(--space-2);
-  border-bottom: 1px solid var(--color-border);
+  gap: var(--space-3);
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.nameRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+  padding: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.avatarGlyph {
+  display: block;
+  font-size: 1.8rem;
+  line-height: 0.85;
+  transform: scale(1.05);
 }
 
 .name {
+  font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--text-base);
+  color: var(--color-text);
 }
 
-.you {
-  color: var(--color-text-muted);
-  font-weight: 500;
-  font-size: var(--text-sm);
-}
-
-.score {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--color-primary);
-  background: var(--color-primary-muted);
-  padding: var(--space-1) var(--space-3);
+.badgeYou,
+.badgeTurn {
+  display: inline-flex;
+  padding: 2px var(--space-2);
   border-radius: var(--radius-full);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.badgeYou {
+  background: var(--color-accent-muted);
+  color: var(--color-accent);
+}
+
+.badgeTurn {
+  background: var(--color-danger-muted);
+  color: var(--color-danger);
+}
+
+.scoreBox {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-lg);
+  background: white;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.scoreIcon {
+  display: inline-flex;
+  color: #d4a017;
+}
+
+.scoreLabel {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.scoreValue {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-success);
+}
+
+.totalBox {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-lg);
+  background: white;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.totalLabel {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.totalValue {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-success);
 }
 
 .grid {
   display: grid;
-  gap: var(--game-card-gap, 8px);
+  grid-template-columns: repeat(4, var(--game-card-w));
   justify-content: center;
+  gap: var(--game-card-gap, 7px);
+  width: 100%;
 }
 
 .compact {
+  --game-card-w: 66px;
+  --game-card-h: 91px;
+  --game-card-fs: 1.5rem;
+
   padding: var(--space-3);
   gap: var(--space-2);
-  border-radius: var(--radius-lg);
-  border-width: 1px;
-  box-shadow: var(--shadow-sm);
 }
 
-.compact .header {
-  padding-bottom: var(--space-1);
+@media (min-width: 640px) {
+  .board,
+  .compact {
+    --game-card-w: 72px;
+    --game-card-h: 99px;
+    --game-card-fs: 1.65rem;
+  }
+}
+
+.compact .avatar {
+  width: 43px;
+  height: 43px;
+}
+
+.compact .avatarGlyph {
+  font-size: 1.6rem;
+  line-height: 0.82;
+  transform: scale(1.08);
 }
 
 .compact .name {
   font-size: var(--text-sm);
 }
 
-.compact .you {
+.compact .scoreBox,
+.compact .totalBox {
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+}
+
+.compact .scoreLabel,
+.compact .scoreValue,
+.compact .totalLabel,
+.compact .totalValue {
   font-size: var(--text-xs);
 }
 
-.compact .score {
-  font-size: var(--text-xs);
-  padding: 2px var(--space-2);
+.compact .scoreIcon svg {
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 520px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .totalBox {
+    align-self: flex-start;
+  }
 }

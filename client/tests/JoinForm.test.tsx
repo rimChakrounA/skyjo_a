@@ -25,6 +25,22 @@ describe('JoinForm', () => {
     expect(screen.getByText('Pseudo requis')).toBeInTheDocument();
   });
 
+  it('affiche un libellé de chargement pendant la création', () => {
+    render(
+      <JoinForm
+        {...defaultProps}
+        code=""
+        busy
+        pendingAction="create"
+        error={null}
+        onCodeChange={vi.fn()}
+        onCreate={vi.fn()}
+        onJoin={vi.fn()}
+      />,
+    );
+    expect(screen.getByText('Création…')).toBeInTheDocument();
+  });
+
   it('déclenche la création de salle', () => {
     const onCreate = vi.fn();
     render(
