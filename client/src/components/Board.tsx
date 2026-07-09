@@ -1,4 +1,6 @@
 import type { PublicPlayer } from '@shared/types/game.js';
+import { GRID_COLS } from '@shared/constants/game.js';
+import { useCardMotions } from '@/hooks/useCardMotions';
 import type { PlayerAvatar } from '@/utils/playerAvatar';
 import { visibleBoardStats } from '@/utils/visibleBoardStats';
 import { CardView } from './CardView';
@@ -51,6 +53,7 @@ export function Board({
   onCardClick,
 }: BoardProps): JSX.Element {
   const { sum: revealedSum } = visibleBoardStats(player.cells);
+  const cardMotions = useCardMotions(player.cells);
   const themeClass = isSelf ? styles.self : isCurrent ? styles.activeOpponent : styles.opponent;
 
   return (
@@ -94,6 +97,8 @@ export function Board({
             <CardView
               key={index}
               cell={cell}
+              motion={cardMotions[index] ?? 'idle'}
+              slotRow={Math.floor(index / GRID_COLS)}
               clickable={clickable}
               ariaLabel={cardAriaLabel(cell, clickable)}
               onClick={clickable ? () => onCardClick?.(index) : undefined}

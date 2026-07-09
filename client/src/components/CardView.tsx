@@ -1,4 +1,7 @@
+import type { CSSProperties } from 'react';
 import type { PublicBoardCell } from '@shared/types/game.js';
+import type { CardMotion } from '@/utils/cardMotion';
+import { motionClass } from '@/utils/cardMotion';
 import { cardTextureStyle } from '@/utils/cardTextures';
 import styles from './CardView.module.css';
 
@@ -7,19 +10,36 @@ export interface CardViewProps {
   clickable?: boolean | undefined;
   onClick?: (() => void) | undefined;
   ariaLabel?: string | undefined;
+  motion?: CardMotion;
+  slotRow?: number;
 }
 
-export function CardView({ cell, clickable = false, onClick, ariaLabel }: CardViewProps): JSX.Element {
+export function CardView({
+  cell,
+  clickable = false,
+  onClick,
+  ariaLabel,
+  motion = 'idle',
+  slotRow = 0,
+}: CardViewProps): JSX.Element {
   if (cell === null) {
-    return <div className={`${styles.card} ${styles.empty}`} aria-hidden="true" />;
+    return (
+      <div
+        className={[styles.card, styles.empty, motionClass(styles, motion)].filter(Boolean).join(' ')}
+        style={{ '--card-slot-row': slotRow } as CSSProperties}
+        aria-hidden="true"
+      />
+    );
   }
 
   const isFaceUp = cell.faceUp;
   const textureStyle = cardTextureStyle(cell);
+  const motionStyle = { '--card-slot-row': slotRow } as CSSProperties;
   const className = [
     styles.card,
     isFaceUp ? styles.faceUp : styles.hidden,
     clickable ? styles.clickable : '',
+    motionClass(styles, motion),
   ]
     .filter(Boolean)
     .join(' ');
@@ -32,7 +52,7 @@ export function CardView({ cell, clickable = false, onClick, ariaLabel }: CardVi
       <button
         type="button"
         className={className}
-        style={textureStyle}
+        style={{ ...textureStyle, ...motionStyle }}
         onClick={onClick}
         aria-label={label}
       >
@@ -54,7 +74,7 @@ export function CardView({ cell, clickable = false, onClick, ariaLabel }: CardVi
   }
 
   return (
-    <div className={className} style={textureStyle}>
+    <div className={className} style={{ ...textureStyle, ...motionStyle }}>
       {isFaceUp ? (
         <>
           <span className={styles.cornerTL} aria-hidden="true">

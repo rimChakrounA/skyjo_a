@@ -1,4 +1,5 @@
 import type { CardValue } from '@shared/types/game.js';
+import { usePileMotion } from '@/hooks/usePileMotion';
 import { Button } from '@/components/ui/Button';
 import { CardView } from './CardView';
 import styles from './DiscardPile.module.css';
@@ -32,7 +33,7 @@ export function DiscardPile({
   onTake,
   onDiscardDrawn,
 }: DiscardPileProps): JSX.Element {
-  const discardKey = discardTop === null ? 'empty' : String(discardTop);
+  const { discardMotion, handMotion } = usePileMotion(discardTop, drawnCard);
 
   return (
     <div className={`${styles.area} ${compact ? styles.compact : ''}`}>
@@ -40,7 +41,7 @@ export function DiscardPile({
         <div className={styles.pilesMain}>
           <div className={styles.pile}>
             <span className={styles.label}>{deckLabel(deckCount)}</span>
-            <div className={`${styles.pileStack} ${styles.drawStack}`}>
+            <div className={`${styles.pileStack} ${styles.drawStack} ${canDraw ? styles.drawReady : ''}`}>
               <div className={styles.deckLayers} aria-hidden="true">
                 <span className={styles.deckLayer} />
                 <span className={styles.deckLayer} />
@@ -71,14 +72,13 @@ export function DiscardPile({
           <div className={styles.pile}>
             <span className={styles.label}>Défausse</span>
             <div className={styles.pileStack}>
-              <div key={discardKey} className={styles.discardChange}>
-                <CardView
-                  cell={discardTop === null ? null : { faceUp: true, value: discardTop }}
-                  clickable={canTake}
-                  ariaLabel="Prendre la carte de la défausse"
-                  onClick={canTake ? onTake : undefined}
-                />
-              </div>
+              <CardView
+                cell={discardTop === null ? null : { faceUp: true, value: discardTop }}
+                motion={discardMotion}
+                clickable={canTake}
+                ariaLabel="Prendre la carte de la défausse"
+                onClick={canTake ? onTake : undefined}
+              />
             </div>
             <Button
               variant="primary"
@@ -100,6 +100,7 @@ export function DiscardPile({
             <div className={styles.pileStack}>
               <CardView
                 cell={{ faceUp: true, value: drawnCard }}
+                motion={handMotion}
                 clickable={canDiscardDrawn}
                 ariaLabel={`Carte piochée : ${drawnCard}`}
                 onClick={canDiscardDrawn ? onDiscardDrawn : undefined}

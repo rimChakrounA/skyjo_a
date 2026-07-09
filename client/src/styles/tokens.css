@@ -123,6 +123,23 @@
   --transition-base: 0.25s ease;
   --transition-bounce: 0.4s cubic-bezier(0.34, 1.4, 0.64, 1);
 
+  /* Cartes — trajectoires premium (table physique) */
+  --perspective-table: 920px;
+  --ease-card-lift: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-card-settle: cubic-bezier(0.33, 0.82, 0.46, 1);
+  --ease-card-travel: cubic-bezier(0.25, 0.74, 0.38, 1);
+  --ease-card-flip: cubic-bezier(0.2, 0.72, 0.32, 1);
+  --duration-card-hover: 0.22s;
+  --duration-card-press: 0.1s;
+  --duration-card-reveal: 0.58s;
+  --duration-card-replace: 0.48s;
+  --duration-card-removed: 0.42s;
+  --duration-card-travel: 0.52s;
+  --duration-card-fade: 0.2s;
+  --shadow-card-lift: 0 4px 14px rgba(30, 58, 95, 0.18);
+  --shadow-card-hover: 0 14px 28px rgba(30, 58, 95, 0.22);
+  --shadow-card-press: 0 2px 8px rgba(30, 58, 95, 0.16);
+
   /* Alias legacy */
   --bg: var(--color-sky-mid);
   --surface: var(--color-surface-elevated);
