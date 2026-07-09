@@ -1,0 +1,41 @@
+.layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 8500;
+}
+
+.burst {
+  position: fixed;
+  width: 4px;
+  height: 4px;
+  transform: translate(-50%, -50%);
+}
+
+.particle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, #7ec8e3 45%, transparent 70%);
+  animation: particleBurst var(--col-clear-ms) ease-out both;
+  animation-delay: calc(var(--i) * 18ms);
+}
+
+@keyframes particleBurst {
+  0% {
+    opacity: 0;
+    transform: rotate(calc(var(--i) * 36deg)) translateY(0) scale(0.3);
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: rotate(calc(var(--i) * 36deg)) translateY(-42px) scale(1.2);
+  }
+}

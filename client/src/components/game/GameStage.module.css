@@ -1,0 +1,42 @@
+.wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.dim {
+  position: absolute;
+  inset: calc(var(--space-2) * -1);
+  background: rgba(20, 36, 56, 0.42);
+  border-radius: var(--radius-xl);
+  z-index: 20;
+  pointer-events: none;
+  animation: dimIn 0.35s ease both;
+}
+
+.stage {
+  position: relative;
+  z-index: 1;
+  transform-origin: center center;
+  transition: transform 0.38s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
+}
+
+@keyframes dimIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage {
+    transition: none;
+  }
+
+  .dim {
+    animation: none;
+  }
+}

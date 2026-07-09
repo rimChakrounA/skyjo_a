@@ -1,0 +1,15 @@
+.score {
+  display: inline-block;
+  transition: color 0.2s ease;
+}
+
+.score:global(.tick) {
+  animation: scoreTick 0.35s ease;
+}
+
+@keyframes scoreTick {
+  50% {
+    transform: scale(1.08);
+    color: var(--color-success);
+  }
+}

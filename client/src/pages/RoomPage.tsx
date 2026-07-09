@@ -10,7 +10,7 @@ import { usePlayerIdentity } from '@/hooks/usePlayerIdentity';
 import { useSocket } from '@/hooks/useSocket';
 import { MainLayout } from '@/layouts/MainLayout';
 import { clearSession } from '@/services/identity';
-import { joinRoom, leaveRoom, startGame } from '@/services/socket';
+import { joinRoom, leaveRoom } from '@/services/socket';
 import type { RoomLocationState } from '@/types/navigation';
 import { assetUrl } from '@/utils/assetUrl';
 import styles from './RoomPage.module.css';
@@ -30,20 +30,6 @@ function LinkIcon(): JSX.Element {
         stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function PlayIcon(): JSX.Element {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="20" height="20">
-      <path
-        d="M8 5v14l11-7L8 5z"
-        fill="currentColor"
-        stroke="currentColor"
-        strokeWidth="1.5"
         strokeLinejoin="round"
       />
     </svg>
@@ -104,14 +90,6 @@ export function RoomPage(): JSX.Element {
     }
   }, [closedReason, navigate]);
 
-  const handleStart = async (): Promise<void> => {
-    setError(null);
-    const response = await startGame();
-    if (!response.ok) {
-      setError(response.error);
-    }
-  };
-
   const handleLeave = async (): Promise<void> => {
     clearSession();
     await leaveRoom();
@@ -152,8 +130,13 @@ export function RoomPage(): JSX.Element {
     );
   }
 
-  const isHost = room.hostId === selfId;
-  const canStart = isHost && room.players.length >= room.minPlayers;
+  const waitingForPlayers = room.players.length < room.minPlayers;
+  const slotsLeft = room.maxPlayers - room.players.length;
+  const missingPlayers = room.minPlayers - room.players.length;
+  const slotsHint =
+    slotsLeft > 0
+      ? ` · ${slotsLeft} place${slotsLeft > 1 ? 's' : ''} restante${slotsLeft > 1 ? 's' : ''}`
+      : '';
 
   return (
     <MainLayout variant="scene">
@@ -164,8 +147,8 @@ export function RoomPage(): JSX.Element {
             <p className={styles.roomMeta}>
               Code : <strong className={styles.roomCode}>{room.code}</strong>
               {' · '}
-              {room.players.length} / {room.maxPlayers} joueurs · min. {room.minPlayers} pour
-              démarrer
+              {room.players.length} / {room.maxPlayers} joueurs · démarrage auto à{' '}
+              {room.minPlayers}
             </p>
           </div>
 
@@ -181,7 +164,11 @@ export function RoomPage(): JSX.Element {
           <header className={styles.head}>
             <div>
               <h3 className={styles.cardTitle}>Joueurs connectés</h3>
-              <p className={styles.cardSubtitle}>En attente du lancement de la partie</p>
+              <p className={styles.cardSubtitle}>
+                {waitingForPlayers
+                  ? 'En attente de joueurs pour lancer la partie'
+                  : 'La partie démarre automatiquement…'}
+              </p>
             </div>
             <div className={styles.headerActions}>
               <Button
@@ -208,23 +195,13 @@ export function RoomPage(): JSX.Element {
           {error !== null && <p className={styles.error}>{error}</p>}
 
           <div className={styles.actions}>
-            {isHost ? (
-              <Button
-                fullWidth
-                size="lg"
-                disabled={!canStart}
-                icon={<PlayIcon />}
-                onClick={() => void handleStart()}
-              >
-                Démarrer la partie
-              </Button>
-            ) : (
-              <p className={styles.waiting}>En attente du lancement par l&apos;hôte…</p>
-            )}
-            {isHost && room.players.length < room.minPlayers && (
-              <p className={styles.hint}>
-                Il faut au moins {room.minPlayers} joueurs pour commencer.
+            {waitingForPlayers ? (
+              <p className={styles.waiting}>
+                {missingPlayers} joueur{missingPlayers > 1 ? 's' : ''} manquant
+                {missingPlayers > 1 ? 's' : ''} pour démarrer{slotsHint}
               </p>
+            ) : (
+              <p className={styles.waiting}>La partie démarre automatiquement…</p>
             )}
           </div>
         </Panel>

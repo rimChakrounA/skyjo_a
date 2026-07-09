@@ -17,6 +17,15 @@
   white-space: nowrap;
 }
 
+.button:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
+.button:not(:disabled):active {
+  transform: translateY(2px) scale(0.97);
+  transition-duration: 0.08s;
+}
+
 .button:disabled {
   opacity: 0.5;
   cursor: not-allowed;

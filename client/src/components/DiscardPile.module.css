@@ -54,6 +54,36 @@
   perspective: var(--perspective-table);
 }
 
+.drawReady {
+  animation: deckBreathe 2.4s ease-in-out infinite;
+}
+
+.discardReady {
+  animation: discardHalo 1.6s ease-in-out infinite;
+}
+
+@keyframes deckBreathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.015);
+  }
+}
+
+@keyframes discardHalo {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 transparent);
+  }
+
+  50% {
+    filter: drop-shadow(0 0 10px rgba(74, 144, 226, 0.45));
+  }
+}
+
 .drawReady > :last-child {
   transition:
     transform var(--duration-card-hover) var(--ease-card-lift),

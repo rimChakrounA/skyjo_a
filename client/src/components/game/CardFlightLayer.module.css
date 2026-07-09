@@ -1,0 +1,17 @@
+.layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9000;
+}
+
+.flight {
+  position: fixed;
+  filter: drop-shadow(0 16px 28px rgba(30, 58, 95, 0.35));
+  will-change: transform, left, top;
+}
+
+.flight :global(.card) {
+  width: 100% !important;
+  height: 100% !important;
+}

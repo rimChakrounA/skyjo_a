@@ -117,17 +117,23 @@ button.card:active:not(:disabled) {
   transition:
     transform var(--duration-card-hover) var(--ease-card-lift),
     box-shadow var(--duration-card-hover) var(--ease-card-lift);
+  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
 }
 
 .clickable:hover {
-  transform: translateY(-5px) rotateX(7deg) scale(1.02);
+  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) translateY(-4px) scale(1.04);
   box-shadow: var(--shadow-card-hover);
 }
 
 .clickable:active {
-  transform: translateY(1px) rotateX(0deg) scale(0.99);
+  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) translateY(1px) scale(1.06);
   box-shadow: var(--shadow-card-press);
   transition-duration: var(--duration-card-press);
+}
+
+.hiddenDuringFlight {
+  opacity: 0 !important;
+  pointer-events: none;
 }
 
 .clickable:focus-visible {

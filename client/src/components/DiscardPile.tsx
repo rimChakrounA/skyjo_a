@@ -1,5 +1,7 @@
 import type { CardValue } from '@shared/types/game.js';
+import { useGameFeel, useAnchor } from '@/contexts/GameFeelContext';
 import { usePileMotion } from '@/hooks/usePileMotion';
+import { anchorDeck, anchorDiscard, anchorHand } from '@/utils/gameAnchors';
 import { Button } from '@/components/ui/Button';
 import { CardView } from './CardView';
 import styles from './DiscardPile.module.css';
@@ -33,6 +35,10 @@ export function DiscardPile({
   onTake,
   onDiscardDrawn,
 }: DiscardPileProps): JSX.Element {
+  const deckRef = useAnchor(anchorDeck());
+  const discardRef = useAnchor(anchorDiscard());
+  const handRef = useAnchor(anchorHand());
+  const { isAnchorHidden } = useGameFeel();
   const { discardMotion, handMotion } = usePileMotion(discardTop, drawnCard);
 
   return (
@@ -41,7 +47,10 @@ export function DiscardPile({
         <div className={styles.pilesMain}>
           <div className={styles.pile}>
             <span className={styles.label}>{deckLabel(deckCount)}</span>
-            <div className={`${styles.pileStack} ${styles.drawStack} ${canDraw ? styles.drawReady : ''}`}>
+            <div
+              ref={deckRef}
+              className={`${styles.pileStack} ${styles.drawStack} ${canDraw ? styles.drawReady : ''}`}
+            >
               <div className={styles.deckLayers} aria-hidden="true">
                 <span className={styles.deckLayer} />
                 <span className={styles.deckLayer} />
@@ -49,6 +58,7 @@ export function DiscardPile({
               <CardView
                 cell={{ faceUp: false }}
                 clickable={canDraw}
+                hidden={isAnchorHidden(anchorDeck())}
                 ariaLabel="Piocher une carte"
                 onClick={canDraw ? onDraw : undefined}
               />
@@ -71,11 +81,15 @@ export function DiscardPile({
 
           <div className={styles.pile}>
             <span className={styles.label}>Défausse</span>
-            <div className={styles.pileStack}>
+            <div
+              ref={discardRef}
+              className={`${styles.pileStack} ${canTake ? styles.discardReady : ''}`}
+            >
               <CardView
                 cell={discardTop === null ? null : { faceUp: true, value: discardTop }}
                 motion={discardMotion}
                 clickable={canTake}
+                hidden={isAnchorHidden(anchorDiscard())}
                 ariaLabel="Prendre la carte de la défausse"
                 onClick={canTake ? onTake : undefined}
               />
@@ -97,11 +111,12 @@ export function DiscardPile({
         {drawnCard !== null && (
           <div className={`${styles.pile} ${styles.handPile}`}>
             <span className={styles.label}>En main</span>
-            <div className={styles.pileStack}>
+            <div ref={handRef} className={styles.pileStack}>
               <CardView
                 cell={{ faceUp: true, value: drawnCard }}
                 motion={handMotion}
                 clickable={canDiscardDrawn}
+                hidden={isAnchorHidden(anchorHand())}
                 ariaLabel={`Carte piochée : ${drawnCard}`}
                 onClick={canDiscardDrawn ? onDiscardDrawn : undefined}
               />

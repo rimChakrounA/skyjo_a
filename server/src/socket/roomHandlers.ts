@@ -1,10 +1,12 @@
 import { createRoomSchema, joinRoomSchema } from '../schemas/room.js';
+import { tryAutoStartLobby } from '../services/lobbyStart.js';
 import { createRoom, joinRoom, leaveRoom } from '../services/roomService.js';
 import { toRoomSummary, type Room } from '../services/room.js';
 import { roomStore } from '../services/roomStore.js';
 import { sessionStore } from '../services/sessionStore.js';
 import { parsePayload } from '../utils/validate.js';
 import { errorMessage, fail, ok } from './ack.js';
+import { broadcastGameState } from './gameBroadcast.js';
 import type { TypedServer, TypedSocket } from './types.js';
 
 /** Diffuse l'état d'une salle à tous ses membres. */
@@ -32,7 +34,7 @@ export function registerRoomHandlers(io: TypedServer, socket: TypedSocket): void
     }
   });
 
-  socket.on('room:join', (payload, ack) => {
+  socket.on('room:join', async (payload, ack) => {
     try {
       const { code, playerName } = parsePayload(joinRoomSchema, payload);
       const normalizedCode = code.toUpperCase();
@@ -41,8 +43,12 @@ export function registerRoomHandlers(io: TypedServer, socket: TypedSocket): void
       socket.data.roomCode = room.code;
       socket.data.playerId = socket.id;
       void socket.join(room.code);
+      const started = tryAutoStartLobby(room);
       ack(ok({ room: toRoomSummary(room), playerId: socket.id, sessionToken }));
       emitRoomUpdate(io, room);
+      if (started) {
+        await broadcastGameState(io, room);
+      }
     } catch (err) {
       ack(fail(errorMessage(err)));
     }

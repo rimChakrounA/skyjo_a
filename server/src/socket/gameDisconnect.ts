@@ -2,7 +2,7 @@ import { MIN_PLAYERS } from '@shared/constants/game.js';
 import { setRoomPlayerConnected } from '../services/roomService.js';
 import { roomStore } from '../services/roomStore.js';
 import { sessionStore } from '../services/sessionStore.js';
-import { broadcastGameState } from './gameHandlers.js';
+import { broadcastGameState } from './gameBroadcast.js';
 import { emitRoomUpdate } from './roomHandlers.js';
 import type { TypedServer, TypedSocket } from './types.js';
 

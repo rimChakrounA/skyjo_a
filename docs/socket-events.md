@@ -17,7 +17,10 @@ Toutes les réponses suivent le format `AckResponse<T>` :
 | `game:action`  | `{ action }` (voir `actions.ts`)   | `null`                  |
 
 `game:start` démarre la partie (statut `lobby`) ou la manche suivante (phase `roundOver`).
-Seul l'hôte peut l'émettre.
+Seul l'hôte peut l'émettre manuellement ; en lobby, la partie démarre aussi **automatiquement**
+dès que `players.length >= minPlayers` (sans attendre le maximum). En fin de manche
+(`roundOver`), la manche suivante démarre **automatiquement** après **2 secondes**
+(délai `ROUND_OVER_AUTO_START_MS`) pour laisser place à l'écran de victoire de manche.
 
 ## Serveur → Client
 

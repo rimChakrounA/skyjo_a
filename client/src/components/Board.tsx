@@ -1,7 +1,12 @@
-import type { PublicPlayer } from '@shared/types/game.js';
 import { GRID_COLS } from '@shared/constants/game.js';
+import type { PublicPlayer } from '@shared/types/game.js';
 import { useCardMotions } from '@/hooks/useCardMotions';
+import { AnimatedScore } from '@/components/game/AnimatedScore';
+import { CardSlot } from '@/components/game/CardSlot';
+import { useGameFeel } from '@/contexts/GameFeelContext';
 import type { PlayerAvatar } from '@/utils/playerAvatar';
+import { anchorSlot } from '@/utils/gameAnchors';
+import { columnIndices } from '@/utils/boardColumns';
 import { visibleBoardStats } from '@/utils/visibleBoardStats';
 import { CardView } from './CardView';
 import styles from './Board.module.css';
@@ -52,13 +57,16 @@ export function Board({
   canClick,
   onCardClick,
 }: BoardProps): JSX.Element {
+  const { isAnchorHidden, collapsedColumns, columnEffects } = useGameFeel();
   const { sum: revealedSum } = visibleBoardStats(player.cells);
   const cardMotions = useCardMotions(player.cells);
+  const collapsed = collapsedColumns.get(player.id) ?? new Set<number>();
+  const clearingCols = new Set(columnEffects.filter((fx) => fx.playerId === player.id).map((fx) => fx.col));
   const themeClass = isSelf ? styles.self : isCurrent ? styles.activeOpponent : styles.opponent;
 
   return (
     <div
-      className={`${styles.board} ${compact ? styles.compact : ''} ${themeClass} ${isCurrent ? styles.current : ''}`}
+      className={`${styles.board} ${compact ? styles.compact : ''} ${themeClass} ${isCurrent ? styles.current : ''} ${isCurrent ? styles.breathing : ''}`}
     >
       <div className={styles.header}>
         <div className={styles.profile}>
@@ -80,7 +88,9 @@ export function Board({
                 <TrophyIcon />
               </span>
               <span className={styles.scoreLabel}>Score</span>
-              <span className={styles.scoreValue}>{player.totalScore}</span>
+              <span className={styles.scoreValue}>
+                <AnimatedScore value={player.totalScore} />
+              </span>
             </div>
           </div>
         </div>
@@ -90,19 +100,35 @@ export function Board({
         </div>
       </div>
 
-      <div className={styles.grid}>
+      <div
+        className={styles.grid}
+        style={{
+          gridTemplateColumns: Array.from({ length: GRID_COLS }, (_, col) =>
+            collapsed.has(col) ? '0px' : 'var(--game-card-w)',
+          ).join(' '),
+        }}
+      >
         {player.cells.map((cell, index) => {
           const clickable = canClick?.(index) ?? false;
+          const col = index % GRID_COLS;
+          const slotKey = anchorSlot(player.id, index);
+          const isClearing = clearingCols.has(col) && columnIndices(col).includes(index);
           return (
-            <CardView
+            <CardSlot
               key={index}
-              cell={cell}
-              motion={cardMotions[index] ?? 'idle'}
-              slotRow={Math.floor(index / GRID_COLS)}
-              clickable={clickable}
-              ariaLabel={cardAriaLabel(cell, clickable)}
-              onClick={clickable ? () => onCardClick?.(index) : undefined}
-            />
+              slotKey={slotKey}
+              className={`${styles.slot} ${collapsed.has(col) ? styles.slotCollapsed : ''} ${isClearing ? styles.slotClearing : ''}`}
+            >
+              <CardView
+                cell={cell}
+                motion={cardMotions[index] ?? 'idle'}
+                slotRow={Math.floor(index / GRID_COLS)}
+                clickable={clickable}
+                hidden={isAnchorHidden(slotKey)}
+                ariaLabel={cardAriaLabel(cell, clickable)}
+                onClick={clickable ? () => onCardClick?.(index) : undefined}
+              />
+            </CardSlot>
           );
         })}
       </div>

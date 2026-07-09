@@ -4,7 +4,7 @@ import type { PublicGameState, PublicPlayer } from '@shared/types/game.js';
 import { useCallback } from 'react';
 import { useGameState } from '@/hooks/useGameState';
 import { useSocket } from '@/hooks/useSocket';
-import { sendAction, startGame } from '@/services/socket';
+import { sendAction } from '@/services/socket';
 
 export interface UseGameResult {
   gameState: PublicGameState | null;
@@ -20,7 +20,6 @@ export interface UseGameResult {
   draw: () => void;
   takeDiscard: () => void;
   discardDrawn: () => void;
-  nextRound: () => void;
 }
 
 function countFaceUp(player: PublicPlayer): number {
@@ -125,10 +124,6 @@ export function useGame(): UseGameResult {
     if (canDiscardDrawn) dispatch({ type: 'DISCARD_DRAWN' });
   }, [canDiscardDrawn, dispatch]);
 
-  const nextRound = useCallback(() => {
-    void startGame();
-  }, []);
-
   return {
     gameState,
     error,
@@ -143,6 +138,5 @@ export function useGame(): UseGameResult {
     draw,
     takeDiscard,
     discardDrawn,
-    nextRound,
   };
 }

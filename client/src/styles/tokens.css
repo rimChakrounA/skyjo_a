@@ -136,6 +136,9 @@
   --duration-card-removed: 0.42s;
   --duration-card-travel: 0.52s;
   --duration-card-fade: 0.2s;
+  --z-game-fx: 8500;
+  --z-game-flight: 9000;
+  --z-game-confetti: 9500;
   --shadow-card-lift: 0 4px 14px rgba(30, 58, 95, 0.18);
   --shadow-card-hover: 0 14px 28px rgba(30, 58, 95, 0.22);
   --shadow-card-press: 0 2px 8px rgba(30, 58, 95, 0.16);

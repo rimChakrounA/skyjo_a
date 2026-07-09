@@ -1,4 +1,5 @@
-import type { CSSProperties } from 'react';
+import type { CSSProperties, MouseEvent } from 'react';
+import { useCallback, useState } from 'react';
 import type { PublicBoardCell } from '@shared/types/game.js';
 import type { CardMotion } from '@/utils/cardMotion';
 import { motionClass } from '@/utils/cardMotion';
@@ -12,6 +13,7 @@ export interface CardViewProps {
   ariaLabel?: string | undefined;
   motion?: CardMotion;
   slotRow?: number;
+  hidden?: boolean;
 }
 
 export function CardView({
@@ -21,12 +23,36 @@ export function CardView({
   ariaLabel,
   motion = 'idle',
   slotRow = 0,
+  hidden = false,
 }: CardViewProps): JSX.Element {
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = useCallback((event: MouseEvent<HTMLElement>) => {
+    if (!clickable) {
+      return;
+    }
+    const rect = event.currentTarget.getBoundingClientRect();
+    const px = (event.clientX - rect.left) / rect.width - 0.5;
+    const py = (event.clientY - rect.top) / rect.height - 0.5;
+    setTilt({ x: px * 8, y: -py * 6 });
+  }, [clickable]);
+
+  const handleMouseLeave = useCallback(() => setTilt({ x: 0, y: 0 }), []);
+
+  const tiltStyle =
+    clickable && motion === 'idle'
+      ? ({
+          ['--tilt-x' as string]: `${tilt.y}deg`,
+          ['--tilt-y' as string]: `${tilt.x}deg`,
+        } as CSSProperties)
+      : undefined;
+
+  const visibilityClass = hidden ? styles.hiddenDuringFlight : '';
   if (cell === null) {
     return (
       <div
-        className={[styles.card, styles.empty, motionClass(styles, motion)].filter(Boolean).join(' ')}
-        style={{ '--card-slot-row': slotRow } as CSSProperties}
+        className={[styles.card, styles.empty, motionClass(styles, motion), visibilityClass].filter(Boolean).join(' ')}
+        style={{ '--card-slot-row': slotRow, ...tiltStyle } as CSSProperties}
         aria-hidden="true"
       />
     );
@@ -40,6 +66,7 @@ export function CardView({
     isFaceUp ? styles.faceUp : styles.hidden,
     clickable ? styles.clickable : '',
     motionClass(styles, motion),
+    visibilityClass,
   ]
     .filter(Boolean)
     .join(' ');
@@ -52,7 +79,9 @@ export function CardView({
       <button
         type="button"
         className={className}
-        style={{ ...textureStyle, ...motionStyle }}
+        style={{ ...textureStyle, ...motionStyle, ...tiltStyle }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
         onClick={onClick}
         aria-label={label}
       >
