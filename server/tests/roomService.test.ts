@@ -11,6 +11,7 @@ describe('createRoom', () => {
     expect(room.hostId).toBe('host');
     expect(room.minPlayers).toBe(2);
     expect(room.maxPlayers).toBe(8);
+    expect(room.insufficientPlayersSince).not.toBeNull();
     expect(store.has(room.code)).toBe(true);
   });
 
@@ -35,6 +36,7 @@ describe('joinRoom', () => {
     const room = createRoom(store, 'host', 'Hôte');
     joinRoom(store, room.code, 'p2', 'Bob');
     expect(store.get(room.code)?.players).toHaveLength(2);
+    expect(store.get(room.code)?.insufficientPlayersSince).toBeNull();
   });
 
   it('refuse de rejoindre une salle introuvable', () => {
@@ -60,6 +62,18 @@ describe('leaveRoom', () => {
     const updated = leaveRoom(store, room.code, 'host');
     expect(updated?.hostId).toBe('p2');
     expect(updated?.players[0]?.isHost).toBe(true);
+  });
+
+  it('relance le compte à rebours quand un joueur quitte et le minimum n’est plus atteint', () => {
+    const store = new RoomStore();
+    const room = createRoom(store, 'host', 'Hôte');
+    joinRoom(store, room.code, 'p2', 'Bob');
+    const beforeLeave = store.get(room.code)?.insufficientPlayersSince;
+    expect(beforeLeave).toBeNull();
+
+    const updated = leaveRoom(store, room.code, 'p2');
+    expect(updated?.players).toHaveLength(1);
+    expect(updated?.insufficientPlayersSince).not.toBeNull();
   });
 
   it('supprime la salle lorsque le dernier joueur la quitte', () => {

@@ -16,6 +16,7 @@ function lobbyRoom(overrides: Partial<Room> = {}): Room {
     ],
     game: null,
     persisted: false,
+    insufficientPlayersSince: null,
     ...overrides,
   };
 }

@@ -61,6 +61,15 @@ export class SessionStore {
     this.sessions.delete(token);
   }
 
+  /** Supprime toutes les sessions liées à une salle. */
+  deleteByRoom(roomCode: string): void {
+    for (const [token, entry] of this.sessions) {
+      if (entry.roomCode === roomCode) {
+        this.sessions.delete(token);
+      }
+    }
+  }
+
   /** Trouve le token d'un joueur dans une salle donnée. */
   findByPlayer(roomCode: string, playerId: string): string | undefined {
     for (const [token, entry] of this.sessions) {

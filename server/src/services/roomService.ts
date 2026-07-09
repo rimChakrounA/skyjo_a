@@ -3,6 +3,7 @@ import { MAX_PLAYERS, MIN_PLAYERS, ROOM_CODE_LENGTH } from '@shared/constants/ga
 import { GameError } from '../game/errors.js';
 import type { Room } from './room.js';
 import type { RoomStore } from './roomStore.js';
+import { syncInsufficientPlayersTimer } from './roomIdle.js';
 
 /** Options de création d'une salle (bornes de joueurs). */
 export interface CreateRoomConfig {
@@ -61,7 +62,9 @@ export function createRoom(
     players: [{ id: hostId, name: hostName, isHost: true, connected: true }],
     game: null,
     persisted: false,
+    insufficientPlayersSince: null,
   };
+  syncInsufficientPlayersTimer(room);
   store.set(room);
   return room;
 }
@@ -87,6 +90,7 @@ export function joinRoom(
     return room;
   }
   room.players.push({ id: playerId, name: playerName, isHost: false, connected: true });
+  syncInsufficientPlayersTimer(room);
   return room;
 }
 
@@ -118,6 +122,7 @@ export function leaveRoom(store: RoomStore, code: string, playerId: string): Roo
     }
   }
 
+  syncInsufficientPlayersTimer(room);
   return room;
 }
 

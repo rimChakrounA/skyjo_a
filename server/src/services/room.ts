@@ -13,6 +13,8 @@ export interface Room {
   game: GameSession | null;
   /** Indique si la partie terminée a déjà été persistée (évite les doublons). */
   persisted: boolean;
+  /** Horodatage (ms) du début d'une attente avec trop peu de joueurs en lobby, sinon `null`. */
+  insufficientPlayersSince: number | null;
 }
 
 /** Convertit une salle interne en résumé destiné aux clients. */

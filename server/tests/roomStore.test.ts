@@ -12,6 +12,7 @@ function sampleRoom(code: string): Room {
     players: [{ id: 'p1', name: 'Hôte', isHost: true, connected: true }],
     game: null,
     persisted: false,
+    insufficientPlayersSince: null,
   };
 }
 

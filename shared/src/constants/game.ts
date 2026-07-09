@@ -42,3 +42,6 @@ export const END_SCORE = 100;
 
 /** Longueur du code d'une salle. */
 export const ROOM_CODE_LENGTH = 5;
+
+/** Délai avant fermeture d'une salle en attente faute de joueurs suffisants (5 minutes). */
+export const LOBBY_INSUFFICIENT_PLAYERS_TIMEOUT_MS = 5 * 60 * 1000;

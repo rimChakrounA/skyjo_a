@@ -3,6 +3,7 @@ import { saveFinishedGame } from '../repositories/finishedGameRepository.js';
 import { prisma } from '../repositories/prismaClient.js';
 import { gameActionPayloadSchema } from '../schemas/game.js';
 import { GameSession } from '../services/gameSession.js';
+import { syncInsufficientPlayersTimer } from '../services/roomIdle.js';
 import { toRoomSummary, type Room } from '../services/room.js';
 import { roomStore } from '../services/roomStore.js';
 import { sessionStore } from '../services/sessionStore.js';
@@ -80,6 +81,7 @@ export function registerGameHandlers(io: TypedServer, socket: TypedSocket): void
           })),
         );
         room.status = 'in-game';
+        room.insufficientPlayersSince = null;
       } else if (room.game !== null && room.game.phase === 'roundOver') {
         room.game.nextRound();
       } else {
@@ -104,6 +106,7 @@ export function registerGameHandlers(io: TypedServer, socket: TypedSocket): void
       room.status = 'lobby';
       room.game = null;
       room.persisted = false;
+      syncInsufficientPlayersTimer(room);
       ack(ok(null));
       // Notifier tous les joueurs de la revanche
       io.to(room.code).emit('game:rematch', toRoomSummary(room));
